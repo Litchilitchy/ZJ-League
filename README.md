@@ -15,3 +15,5 @@ ZJ杯视频识别
 ##### 视频关键帧提取
 
 ##### image-question模型
+
+![image](http://github.com/SummerLitchy/Zcup/_instruction/VQA-attention.png)
