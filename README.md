@@ -16,4 +16,6 @@ ZJ杯视频识别
 
 ##### image-question模型
 
-![image](http://github.com/SummerLitchy/Zcup/_instruction/VQA-attention.png)
+![image](https://github.com/SummerLitchy/Zcup/blob/master/_instruction/VQA-attention.png)
+
+先直接搬来这个模型 https://github.com/shiyangdaisy23/vqa-mxnet-gluon/blob/master/Attention-VQA-gluon.ipynb
