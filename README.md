@@ -8,3 +8,10 @@ ZJ杯视频识别
         ---extract_question.py
       model.py
       train.py
+      
+      
+#### 模型
+
+##### 视频关键帧提取
+
+##### image-question模型
