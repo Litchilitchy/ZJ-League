@@ -16,12 +16,17 @@ ZJ杯视频识别
 
 运行结束`feature`文件夹中的代码后，运行`train.py`生成answer数据输出
       
-#### 模型
-
-##### 视频关键帧提取
-
-##### image-question模型
+### 方法
+      
+#### 视频关键帧提取      
+   
+#### image-question模型
 
 ![image](https://github.com/SummerLitchy/Zcup/blob/master/_instruction/VQA-attention.png)
 
 先直接搬来这个模型 https://github.com/shiyangdaisy23/vqa-mxnet-gluon/blob/master/Attention-VQA-gluon.ipynb
+
+以上模型作为最终参考版本
+
+##### v1 模型
+采用2048的一维图片向量和一维词向量
