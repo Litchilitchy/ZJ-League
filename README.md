@@ -9,7 +9,11 @@ ZJ杯视频识别
         ---extract_question.py  
       model.py
       train.py
-      
+
+#### 训练方法
+`feature`文件夹中的`extract_image`和`extract_question`可以单独运行，作为提取特征的预训练
+
+运行结束`feature`文件夹中的代码后，运行`train.py`生成answer数据输出
       
 #### 模型
 
