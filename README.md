@@ -26,7 +26,7 @@ ZJ杯视频识别
 
 先直接搬来这个模型 https://github.com/shiyangdaisy23/vqa-mxnet-gluon/blob/master/Attention-VQA-gluon.ipynb
 
-以上模型作为最终参考版本
+以上模型作为最终参考版本，下面的模型从比较简单的开始实验，并做记录
 
 ##### v1 模型
 采用2048的一维图片向量和一维词向量
