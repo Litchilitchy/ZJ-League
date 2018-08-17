@@ -6,6 +6,8 @@ import mxnet.gluon as gluon
 from mxnet.gluon import nn
 from mxnet import autograd
 
+import model
+
 
 def evaluate_accuracy(data_iterator, net, ctx=mx.cpu()):
     numerator = 0.
@@ -60,3 +62,45 @@ def train(net, data_train, data_eva, ctx=mx.cpu()):
             best_eva = eva_accuracy
             logging.info('Best validation acc found. Checkpointing...')
             net.save_params('vqa-mlp-%d.params' % (e))
+
+
+def output_data(ans=[[]], map_index_to_vid={}):
+    with open('submit.txt', 'w') as f:
+        for i in range(len(map_index_to_vid)):
+            line = ""
+            line += map_index_to_vid[i] + ','
+            for j in range(5):
+
+                if i != 4:
+                    line += ','
+            line += '\n'
+            f.write(line)
+    return
+
+
+def predict(net, data_test, ctx=mx.cpu()):
+    ans = []
+    for i, batch in enumerate(data_test):
+        with autograd.record():
+            image = batch.data[0].as_in_context(ctx)
+            question = batch.data[1].as_in_context(ctx)
+            data = [image, question]
+            # label = batch.label[0].as_in_context(ctx)
+            # label_one_hot = nd.one_hot(label, 10)
+            output = net(data)
+
+    return ans
+    # output = np.argmax(output.asnumpy(), axis=1)
+
+
+if __name__ == '__main__':
+    ctx = mx.cpu()
+    net = model.Net1()
+    net.collect_params().initialize(mx.init.Xavier)
+    data_train = []
+    data_eval = []
+    data_test = []
+    train(net, data_train, data_eval, ctx)
+    ans = predict(net, data_test, ctx)
+    output_data(ans)
+
