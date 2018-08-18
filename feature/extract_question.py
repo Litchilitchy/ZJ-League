@@ -79,15 +79,45 @@ def load_glove(data_dir_path=None, embedding_dim=None):
     return _word2em
 
 
-def get_qa_pair_from_line(line):
+def get_qa_pair_from_line(line, word_emd_dict={}):
     buff = line.split(',')
 
     if (len(buff) - 1) % 4 != 0:
         raise AssertionError("qa length error, not times of 4")
-    pair = []
-    for i in range(1, len(buff), 4):
-        for j in range(i+1, i+4):
-            pair.append([buff[i], buff[j]])
+    qa_content = []
 
-    # [ [q, ans1], [q, ans2], [q, ans3] ]
-    return pair
+    qa_content.append(buff[0])
+
+    for i in range(1, len(buff), 4):
+        q_sentence = buff[i]
+        q_words = q_sentence.split(' ')
+        q_vec = []
+        for q in q_words:
+            q_vec.append(word_emd_dict[q])
+        qa_content.append(q_vec)
+
+        for j in range(i+1, i+4):
+            ans_vec = []
+            ans_sentence = buff[j]
+            ans_words = ans_sentence.split(' ')
+            for ans in ans_words:
+                ans_vec.append(word_emd_dict[ans])
+
+
+    # [video_id, [q1], [a],[b],[c], [q2], [a],[b],[c] ]
+    # [q][a][b][c] are 1-d vectors
+    return qa_content
+
+
+def output_question_feature(data_path, word_emd_dict={}):
+    question_feature = []
+    with open(data_path) as f:
+        for line in f:
+            feature = get_qa_pair_from_line(line, word_emd_dict)
+            question_feature.append(feature)
+
+    # output question_feature to file
+
+
+
+
