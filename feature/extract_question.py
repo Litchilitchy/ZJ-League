@@ -84,10 +84,14 @@ def get_qa_pair_from_line(line, word_emd_dict={}):
 
     if (len(buff) - 1) % 4 != 0:
         raise AssertionError("qa length error, not times of 4")
+    if (len(buff) - 1) / 4 != 5:
+        raise AssertionError("qa length error, not 5 questions")
+
     qa_content = []
 
     qa_content.append(buff[0])
 
+    # every questions has 3 answers, 3+1 = 4
     for i in range(1, len(buff), 4):
         q_sentence = buff[i]
         q_words = q_sentence.split(' ')
@@ -96,6 +100,7 @@ def get_qa_pair_from_line(line, word_emd_dict={}):
             q_vec.append(word_emd_dict[q])
         qa_content.append(q_vec)
 
+        # for the 3 questions, i+1 to i+3
         for j in range(i+1, i+4):
             ans_vec = []
             ans_sentence = buff[j]
@@ -117,6 +122,9 @@ def output_question_feature(data_path, word_emd_dict={}):
             question_feature.append(feature)
 
     # output question_feature to file
+    # question_feature是feature的简单集合
+    # 每个feature格式如上所示，为
+    # [video_id, [q1], [a],[b],[c], [q2], [a],[b],[c], ... ,[q5], [a],[b],[c] ]
 
 
 
