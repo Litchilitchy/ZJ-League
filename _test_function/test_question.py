@@ -94,9 +94,11 @@ def get_qa_pair_from_line(line, word_emd_dict={}):
     # every questions has 3 answers, 3+1 = 4
     for i in range(1, len(buff), 4):
         q_sentence = buff[i]
-        q_words = q_sentence.split(' ')
+        q_words = q_sentence.strip('\n').split(' ')
         q_vec = []
         for q in q_words:
+            if q not in word_emd_dict:
+                continue
             q_vec.append(word_emd_dict[q])
         qa_content.append(q_vec)
 
@@ -104,8 +106,10 @@ def get_qa_pair_from_line(line, word_emd_dict={}):
         for j in range(i+1, i+4):
             ans_vec = []
             ans_sentence = buff[j]
-            ans_words = ans_sentence.split(' ')
+            ans_words = ans_sentence.strip('\n').split(' ')
             for ans in ans_words:
+                if ans not in word_emd_dict:
+                    continue
                 ans_vec.append(word_emd_dict[ans])
 
 
