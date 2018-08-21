@@ -4,6 +4,7 @@ ZJ杯视频识别
 #### 目录结构
     ---
       _instruction   # 用来放说明文件
+      _test_function   # 用来测试单个模块
       feature
         ---extract_image.py 
         ---extract_question.py  
