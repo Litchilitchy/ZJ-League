@@ -11,6 +11,9 @@ ZJ杯视频识别
       model.py
       train.py
       
+以上为github中目录，实际使用目录需要新增一个glove路径用于存放词向量模型，具体方法为
+
+copy以上目录到项目路径，并且新建一个文件夹，放入`glove.6B.zip`（建议在 http://nlp.stanford.edu/data 中下载并复制，使用python中的下载函数容易出错，并且不支持断点）
 
 #### 训练方法
 `feature`文件夹中的`extract_image`和`extract_question`可以单独运行，作为提取特征的预训练
