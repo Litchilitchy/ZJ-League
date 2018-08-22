@@ -79,7 +79,7 @@ def load_glove(data_dir_path=None, embedding_dim=None):
     return _word2em
 
 
-def get_qa_pair_from_line(line, word_emd_dict={}):
+def get_qa_pair_from_line(line, word_emd_dict={}, emb_dim=100):
     buff = line.split(',')
 
     if (len(buff) - 1) % 4 != 0:
@@ -94,20 +94,25 @@ def get_qa_pair_from_line(line, word_emd_dict={}):
     # every questions has 3 answers, 3+1 = 4
     for i in range(1, len(buff), 4):
         q_sentence = buff[i]
-        q_words = q_sentence.split(' ')
-        q_vec = []
+        q_words = q_sentence.strip('\n').split(' ')
+        q_vec = np.zeros(emb_dim)
         for q in q_words:
-            q_vec.append(word_emd_dict[q])
+            if q not in word_emd_dict:
+                continue
+            q_vec += word_emd_dict[q]
+
         qa_content.append(q_vec)
 
         # for the 3 questions, i+1 to i+3
         for j in range(i+1, i+4):
-            ans_vec = []
+            ans_vec = np.zeros(emb_dim)
             ans_sentence = buff[j]
-            ans_words = ans_sentence.split(' ')
+            ans_words = ans_sentence.strip('\n').split(' ')
             for ans in ans_words:
-                ans_vec.append(word_emd_dict[ans])
-
+                if ans not in word_emd_dict:
+                    continue
+                ans_vec += word_emd_dict[ans]
+            qa_content.append(ans_vec)
 
     # [video_id, [q1], [a],[b],[c], [q2], [a],[b],[c] ]
     # [q][a][b][c] are 1-d vectors
