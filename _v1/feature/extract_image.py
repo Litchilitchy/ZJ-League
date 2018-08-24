@@ -1,4 +1,5 @@
 from mxnet import nd, image
+import numpy as np
 import os
 
 
@@ -34,9 +35,17 @@ def get_image_feature(img_path):
 
 def output_image_feature(data_path):
     image_feature = []
-    for filename in os.listdir(data_path):
-        feature = get_image_feature(os.path.join(filename))
+    file_list = os.listdir(data_path)
+    file_list.sort()
+    for filename in file_list:
+        if filename.split('.')[1] != 'jpg':
+            continue
+        feature = get_image_feature('./../img/' + filename)
         image_feature.append(feature)
 
+    np.save('question.npy', image_feature)
     # output feature to file
-    # 此处需要先看一下feature的形状，image_feature是feature的简单list集合
+    # feature shape (2048, )
+
+
+output_image_feature('./../img/')
