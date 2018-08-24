@@ -8,6 +8,7 @@ import numpy as np
 import logging
 import pickle
 import time
+import json
 
 
 def reporthook(block_num, block_size, total_size):
@@ -45,7 +46,7 @@ def load_glove(data_dir_path=None, embedding_dim=None):
     """
     Load the glove models (and download the glove model if they don't exist in the data_dir_path
     :param data_dir_path: the directory path on which the glove model files will be downloaded and store
-    :param embedding_dim: the dimension of the word embedding, available dimensions are 50, 100, 200, 300, default is 100
+    :param embedding_dim: t，he dimension of the word embedding, available dimensions are 50, 100, 200, 300, default is 100
     :return: the glove word embeddings
     """
     if embedding_dim is None:
@@ -79,7 +80,7 @@ def load_glove(data_dir_path=None, embedding_dim=None):
     return _word2em
 
 
-def get_qa_pair_from_line(line, word_emd_dict={}):
+def get_qa_pair_from_line(line, word_emd_dict={}, ans_dict={}, emb_dim=100):
     buff = line.split(',')
 
     if (len(buff) - 1) % 4 != 0:
@@ -93,25 +94,36 @@ def get_qa_pair_from_line(line, word_emd_dict={}):
 
     # every questions has 3 answers, 3+1 = 4
     for i in range(1, len(buff), 4):
+        # question
         q_sentence = buff[i]
         q_words = q_sentence.strip('\n').split(' ')
-        q_vec = []
+        q_vec = np.zeros(emb_dim)
         for q in q_words:
             if q not in word_emd_dict:
                 continue
-            q_vec.append(word_emd_dict[q])
+            q_vec += word_emd_dict[q]
+
         qa_content.append(q_vec)
 
         # for the 3 questions, i+1 to i+3
+        # ans1, ans2, ans3
         for j in range(i+1, i+4):
-            ans_vec = []
+            ans = 0
             ans_sentence = buff[j]
-            ans_words = ans_sentence.strip('\n').split(' ')
+
+            if ans_sentence not in ans_dict.values():
+                ans = len(ans_dict)
+                ans_dict[ans] = ans_sentence
+            else:
+                ans = [k for k, v in ans_dict.items() if v == ans_sentence][0]
+            qa_content.append(ans)
+
+            '''ans_words = ans_sentence.strip('\n').split(' ')            
             for ans in ans_words:
                 if ans not in word_emd_dict:
                     continue
-                ans_vec.append(word_emd_dict[ans])
-
+                ans_vec += word_emd_dict[ans]
+            qa_content.append(ans_vec)'''
 
     # [video_id, [q1], [a],[b],[c], [q2], [a],[b],[c] ]
     # [q][a][b][c] are 1-d vectors
@@ -120,16 +132,36 @@ def get_qa_pair_from_line(line, word_emd_dict={}):
 
 def output_question_feature(data_path, word_emd_dict={}):
     question_feature = []
+
+    ans_dict = {}
     with open(data_path) as f:
         for line in f:
-            feature = get_qa_pair_from_line(line, word_emd_dict)
+            feature = get_qa_pair_from_line(line, word_emd_dict, ans_dict)
             question_feature.append(feature)
 
-    # output question_feature to file
-    # question_feature是feature的简单集合
-    # 每个feature格式如上所示，为
-    # [video_id, [q1], [a],[b],[c], [q2], [a],[b],[c], ... ,[q5], [a],[b],[c] ]
+    with open('ans_dict.json', 'w') as f:
+        json.dump(ans_dict, f)
+
+    question_feature.sort()
+
+    video_idx_dict = {}
+
+    for q in question_feature:
+        video_idx_dict[len(video_idx_dict)] = q[0]
+    with open('video_idx_dict.json', 'w') as f:
+        json.dump(video_idx_dict, f)
+
+    q_list = []
+    ans_list = []
+    for question in question_feature:
+        for i in range(1, len(question), 4):
+            q_list.append(question[i])
+            for j in range(i+1, i+4):
+                ans_list.append(j)
+
+    np.save('question.npy', q_list)
+    np.save('answer.npy', ans_list)
 
 
-
-
+word_dict = load_glove('./../glove_model')
+output_question_feature('./../train.txt', word_dict)
