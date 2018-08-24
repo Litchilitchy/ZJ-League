@@ -1,6 +1,7 @@
 import numpy as np
 import mxnet as mx
 import logging
+from data_iter import DataIter
 
 import mxnet.gluon as gluon
 from mxnet.gluon import nn
@@ -34,7 +35,7 @@ def train(net, data_train, data_eva, ctx=mx.cpu()):
     moving_loss = 0.
     best_eva = 0
     for e in range(epochs):
-        data_train.reset()
+
         for i, batch in enumerate(data_train):
             data1 = batch.data[0].as_in_context(ctx)
             data2 = batch.data[1].as_in_context(ctx)
@@ -96,8 +97,12 @@ def predict(net, data_test, ctx=mx.cpu()):
 if __name__ == '__main__':
     ctx = mx.cpu()
     net = model.Net1()
-    net.collect_params().initialize(mx.init.Xavier)
-    data_train = []
+    net.collect_params().initialize(mx.init.Xavier(), ctx)
+    train_img = np.load('feature/image.npy')
+    train_ans = np.load('feature/answer.npy')
+    train_q = np.load('feature/question.npy')
+
+    data_train = DataIter()
     data_eval = []
     data_test = []
     train(net, data_train, data_eval, ctx)

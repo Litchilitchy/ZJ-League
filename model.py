@@ -14,10 +14,12 @@ class Net1(gluon.Block):
             self.dropout = nn.Dropout(0.3)
             self.fc1 = nn.Dense(8192, activation="relu")
             self.fc2 = nn.Dense(1000)
+            self.lstm = gluon.rnn.LSTM(100, 2)
 
     def forward(self, x):
         x1 = nd.L2Normalization(x[0])
         x2 = nd.L2Normalization(x[1])
+
         z = nd.concat(x1, x2, dim=1)
         z = self.fc1(z)
         z = self.bn(z)
