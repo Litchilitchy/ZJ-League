@@ -5,6 +5,7 @@ ZJ杯视频识别
     ---
       _instruction   # 用来放说明文件
       _test_function   # 用来测试单个模块      
+      _test_data   # 用来放用于debug的数据，数据量非常小，仅用于跑通代码
       feature
         ---extract_image.py 
         ---extract_question.py  
@@ -20,7 +21,7 @@ ZJ杯视频识别
 
 需要新增一个glove路径用于存放词向量模型，具体方法为，并且新建一个文件夹，放入`glove.6B.zip`（建议在 http://nlp.stanford.edu/data 中下载并复制，使用python中的下载函数容易出错，并且不支持断点）
 
-需要用到视频关键帧截取`get_video_frame.py`（此模块不包括在主要代码中），输出图片（每个视频三张）作为训练数据，和原训练文本数据一起放在根目录下的文件夹中
+需要用到视频关键帧截取`get_video_frame.py`（此模块在`data`文件夹下），输出图片（每个视频三张）作为训练数据，和原训练文本数据一起放在根目录下的文件夹中
 
 最初的模型从 v1 -> vn 版本存放在 \_v1 -> \_vn 文件夹中，根目录下为最终模型
 
