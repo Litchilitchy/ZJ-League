@@ -14,7 +14,7 @@ class Net1(gluon.Block):
             self.dropout = nn.Dropout(0.3)
             self.fc1 = nn.Dense(8192, activation="relu")
             self.fc2 = nn.Dense(1000)
-            self.lstm = gluon.rnn.LSTM(100, 2)
+            # self.lstm = gluon.rnn.LSTM(100, 2)
 
     def forward(self, x):
         x1 = nd.L2Normalization(x[0])

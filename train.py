@@ -116,9 +116,10 @@ if __name__ == '__main__':
     '''
 
     data_test = DataIter(train_img, train_q, train_ans)
-    ans_idx = predict(net, data_test, ctx)
+    vid_list = ['ZJL963','ZJL2495','ZJL3540']
+    ans_idx = predict(net, data_test, ctx, vid_list)
 
-    ans_dict = json.load('feature/ans_dict.json')
+    ans_dict = json.load(open('feature/ans_dict.json'))
     ans = ans_dict[ans_idx]
     output_data(ans)
 

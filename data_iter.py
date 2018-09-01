@@ -1,27 +1,29 @@
 import numpy as np
 import mxnet as mx
+import mxnet.ndarray as nd
 
 
 class DataIter(mx.io.DataIter):
     def __init__(self, image, question, answer, batch_size=20):
-        self.idx = 0
+        self.idx = []
         self.cur_idx = 0
         self.image = image
         self.question = question
         self.answer = answer
+        for i in range(int(len(self.image)/3)):
+            self.idx.append(i)
 
         self.provide_data = [('image', (batch_size, 2048)),
                              ('question', batch_size, 100)]
         self.provide_label = [('label', (batch_size, ))]
 
     def reset(self):
-        self.idx = 0
+        self.cur_idx = 0
 
     def next(self):
-        if self.cur_idx == len(self.idx):
-            raise StopIteration
-
         self.cur_idx += 1
+        if self.cur_idx >= len(self.idx):
+            raise StopIteration
 
         image = []
         question = []
@@ -32,10 +34,15 @@ class DataIter(mx.io.DataIter):
         for i in range(15):
             image_cat.append(image)
         for question_idx in range(5*self.cur_idx, 5*self.cur_idx+5):
-            question.extend(self.question[question_idx])
-            for answer_idx in range(3*question_idx, 3*question_idx+3):
-                answer.extend(self.answer[answer_idx])
 
+            for answer_idx in range(3*question_idx, 3*question_idx+3):
+                question.append(self.question[question_idx])
+                answer.append(self.answer[answer_idx])
+
+        image_cat = nd.array(image_cat)
+        question = nd.array(question)
+        answer = nd.array(answer)
         data = [image_cat, question]
+
         return mx.io.DataBatch(data, [answer])
 
