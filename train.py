@@ -66,17 +66,32 @@ def train(net, data_train, ctx=mx.cpu()):
             net.save_params('vqa-mlp-%d.params' % (e))
 
 
-def output_data(ans=[[]], map_index_to_vid={}):
-    with open('submit.txt', 'w') as f:
-        for i in range(len(map_index_to_vid)):
-            line = ""
-            line += map_index_to_vid[i] + ','
-            for j in range(5):
+def output_data(idx_to_ans={}, vid_to_ans={}):
+    with open('submit.txt', 'r') as f:
 
-                if i != 4:
-                    line += ','
-            line += '\n'
-            f.write(line)
+        with open('my_submit.txt', 'w') as out:
+
+            line = f.readline().split(',')
+            assert len(line) == 21
+            vid = line[0]
+            q = []
+            for i in range(1, 21, 4):
+                q.append(line[i])
+
+            ans = ''
+            ans += vid
+            ans += ','
+            for i in range(5):
+                ans += q[i]
+                ans += ','
+                tp = np.argsort(vid_to_ans[vid][i].asnumpy())[-3:]
+                for j in range(3):
+                    if tp[j] > len(idx_to_ans):
+                        tp[j] = str(0)
+
+                ans += idx_to_ans[tp[0]] + ',' + idx_to_ans[tp[1]] + ',' + idx_to_ans[tp[2]]
+            ans += '\n'
+            out.write(ans)
     return
 
 
@@ -120,10 +135,11 @@ if __name__ == '__main__':
     '''
 
     data_test = DataIter(train_img, train_q, train_ans)
+    # vid_list is something get from video_idx_dict.json
     vid_list = ['ZJL963', 'ZJL2495', 'ZJL3540']
     ans_idx = predict(net, data_test, ctx, vid_list)
 
     ans_dict = json.load(open('feature/ans_dict.json'))
-    ans = ans_dict[ans_idx]
-    output_data(ans)
+
+    output_data(ans_dict, ans_idx)
 
