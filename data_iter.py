@@ -21,7 +21,7 @@ class DataIter(mx.io.DataIter):
         self.cur_idx = 0
 
     def next(self):
-        self.cur_idx += 1
+
         if self.cur_idx >= len(self.idx):
             raise StopIteration
 
@@ -43,6 +43,8 @@ class DataIter(mx.io.DataIter):
         question = nd.array(question)
         answer = nd.array(answer)
         data = [image_cat, question]
+
+        self.cur_idx += 1
 
         return mx.io.DataBatch(data, [answer])
 

@@ -92,6 +92,10 @@ def predict(net, data_test, ctx=mx.cpu(), vid_list=[]):
             # label = batch.label[0].as_in_context(ctx)
             # label_one_hot = nd.one_hot(label, 10)
             output = net(data)
+            '''
+            if vid_list[i] not in ans:
+                ans[vid_list[i]] = []
+            ans[vid_list[i]].append(output)'''
             ans[vid_list[i]] = output
 
     return ans
@@ -116,7 +120,7 @@ if __name__ == '__main__':
     '''
 
     data_test = DataIter(train_img, train_q, train_ans)
-    vid_list = ['ZJL963','ZJL2495','ZJL3540']
+    vid_list = ['ZJL963', 'ZJL2495', 'ZJL3540']
     ans_idx = predict(net, data_test, ctx, vid_list)
 
     ans_dict = json.load(open('feature/ans_dict.json'))
