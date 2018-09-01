@@ -43,7 +43,8 @@ def output_image_feature(data_path):
         feature = get_image_feature('./../img/' + filename)
         image_feature.append(feature)
 
-    np.save('question.npy', image_feature)
+    image_feature_nd = np.vstack(image_feature)
+    np.save('image.npy', image_feature_nd)
     # output feature to file
     # feature shape (2048, )
 
