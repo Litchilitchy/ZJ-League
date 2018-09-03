@@ -4,13 +4,12 @@ ZJ杯视频识别
 #### 目录结构
     ---
       _instruction   # 用来放说明文件
-      _test_function   # 用来测试单个模块      
-      _test_data   # 用来放用于debug的数据，数据量非常小，仅用于跑通代码
+      _test_function   # 用来测试单个模块 
       feature
         ---extract_image.py 
         ---extract_question.py  
-      model.py
-      train.py
+      model.py  
+      train.py   
       data_iter.py
       
       _v1
@@ -19,29 +18,42 @@ ZJ杯视频识别
       
 以上为github中目录，使用时需先copy以上目录到项目路径，另外，实际使用目录变更如下：
 
-需要新增一个glove路径用于存放词向量模型，具体方法为，并且新建一个文件夹，放入`glove.6B.zip`（建议在 http://nlp.stanford.edu/data 中下载并复制，使用python中的下载函数容易出错，并且不支持断点）
+需要新增一个glove路径用于存放词向量模型，具体方法为，在`feature`文件夹下，放入`glove.6B.zip`（建议在 http://nlp.stanford.edu/data 中下载并复制，使用python中的下载函数容易出错，并且不支持断点）
 
 需要用到视频关键帧截取`get_video_frame.py`（此模块在`data`文件夹下），输出图片（每个视频三张）作为训练数据，和原训练文本数据一起放在根目录下的文件夹中
 
-最初的模型从 v1 -> vn 版本存放在 \_v1 -> \_vn 文件夹中，根目录下为最终模型
+最初的模型从 v1 -> vn 版本存放在 \_v1 -> \_vn 文件夹中，根目录下为最终模型，v1 -> vn 每个文件夹下都包含所有该模型代码（`feature`中的两个`.py`和根目录下的三个`.py`）
 
-实际目录除上述外，新增如下
+实际使用目录如下，github上的data目录中包含了截取的非常少量的数据，仅用于debug跑通程序
     
-    ---      
-      data        
-        img
-          ---vid1_1.jpg
-          ---vid1_2.jpg
-          ...
-          ---vidn_3.jpg
-          
-        ---train.txt
-        ---test.txt
-        ---submit.txt
-        get_video_frame.py
+    ---   
+    data        
+      train_img
+        ---vid1_1.jpg
+        ---vid1_2.jpg
+        ...
+        ---vidn_3.jpg
+      test_img
+        ---vid1_1.jpg
+        ---vid1_2.jpg
+        ...
+        ---vidn_3.jpg    
+      ---train.txt
+      ---test.txt
+      ---submit.txt
+      get_video_frame.py
+    feature
+      glove_model
+        ---glove.6B.zip
+      ---extract_image.py 
+      ---extract_question.py  
+    model.py
+    train.py
+    data_iter.py
+      
 
 #### 训练方法
-`feature`文件夹中的`extract_image`和`extract_question`可以单独运行，作为提取特征的预训练
+`feature`文件夹中的`extract_image`和`extract_question`可以单独运行，先分别运行一次，生成`train.py`中需要的`.npy`文件，作为提取特征的预训练
 
 `model`为模型，`data_iter`中为读取预训练生成的`.npy`数据的方法
 
