@@ -150,12 +150,11 @@ def output_question_feature(data_path, word_emd_dict={}, is_test=False):
         video_idx_dict[len(video_idx_dict)] = q[0]
 
     if is_test:
-        video_idx_dict_name = 'video_idx_dict_test.json'
+        video_idx_dict_name = 'video_idx_dict.json'
+        with open(video_idx_dict_name, 'w') as f:
+            json.dump(video_idx_dict, f)
     else:
         video_idx_dict_name = 'video_idx_dict_train.json'
-
-    with open(video_idx_dict_name, 'w') as f:
-        json.dump(video_idx_dict, f)
 
     q_list = []
     ans_list = []
@@ -172,6 +171,6 @@ def output_question_feature(data_path, word_emd_dict={}, is_test=False):
         np.save('train_answer.npy', ans_list)
 
 
-word_dict = load_glove('./../glove_model')
-output_question_feature('./../train.txt', word_dict, False)
-output_question_feature('./../test.txt', word_dict, True)
+word_dict = load_glove('./glove_model')
+output_question_feature('./../data/train.txt', word_dict, False)
+output_question_feature('./../data/test.txt', word_dict, True)

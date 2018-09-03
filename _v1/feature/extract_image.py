@@ -38,16 +38,10 @@ def output_image_feature(data_path, is_test=False):
     file_list = os.listdir(data_path)
     file_list.sort()
 
-    img_path = None
-    if is_test:
-        img_path = './../test_img/'
-    else:
-        img_path = './../train_img/'
-
     for filename in file_list:
         if filename.split('.')[1] != 'jpg':
             continue
-        feature = get_image_feature(img_path + filename).asnumpy()
+        feature = get_image_feature(data_path + filename).asnumpy()
         image_feature.append(feature)
 
     image_feature_nd = np.vstack(image_feature)
@@ -59,5 +53,5 @@ def output_image_feature(data_path, is_test=False):
     # feature shape (2048, )
 
 
-output_image_feature('./../train_img/', False)
-output_image_feature('./../test_img/', True)
+output_image_feature('./../data/train_img/', False)
+output_image_feature('./../data/test_img/', True)
