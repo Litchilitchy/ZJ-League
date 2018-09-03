@@ -67,31 +67,35 @@ def train(net, data_train, ctx=mx.cpu()):
 
 
 def output_data(idx_to_ans={}, vid_to_ans={}):
-    with open('submit.txt', 'r') as f:
+    with open('data/test.txt', 'r') as f:
 
-        with open('my_submit.txt', 'w') as out:
+        with open('data/submit.txt', 'w') as out:
+            for line in f:
+                line = line.split(',')
+                assert len(line) == 21
+                vid = line[0]
+                q = []
+                for i in range(1, 21, 4):
+                    q.append(line[i])
 
-            line = f.readline().split(',')
-            assert len(line) == 21
-            vid = line[0]
-            q = []
-            for i in range(1, 21, 4):
-                q.append(line[i])
-
-            ans = ''
-            ans += vid
-            ans += ','
-            for i in range(5):
-                ans += q[i]
+                ans = ''
+                ans += vid
                 ans += ','
-                tp = np.argsort(vid_to_ans[vid][i].asnumpy())[-3:]
-                for j in range(3):
-                    if tp[j] > len(idx_to_ans):
-                        tp[j] = str(0)
+                for i in range(5):
+                    ans += q[i]
+                    ans += ','
+                    tp = np.argsort(vid_to_ans[vid][i].asnumpy())[-3:].tolist()
+                    for j in range(3):
+                        if tp[j] > len(idx_to_ans):
+                            tp[j] = str(0)
+                        else:
+                            tp[j] = str(tp[j])
 
-                ans += idx_to_ans[tp[0]] + ',' + idx_to_ans[tp[1]] + ',' + idx_to_ans[tp[2]]
-            ans += '\n'
-            out.write(ans)
+                    ans += idx_to_ans[tp[0]] + ',' + idx_to_ans[tp[1]] + ',' + idx_to_ans[tp[2]]
+                    if i != 4:
+                        ans += ','
+                ans += '\n'
+                out.write(ans)
     return
 
 
@@ -121,9 +125,12 @@ if __name__ == '__main__':
     ctx = mx.cpu()
     net = model.Net1()
     net.collect_params().initialize(mx.init.Xavier(), ctx)
-    train_img = np.load('feature/image.npy')
-    train_ans = np.load('feature/answer.npy')
-    train_q = np.load('feature/question.npy')
+    train_img = np.load('feature/train_image.npy')
+    train_ans = np.load('feature/train_answer.npy')
+    train_q = np.load('feature/train_question.npy')
+
+    test_img = np.load('feature/test_image.npy')
+    test_q = np.load('feature/test_question.npy')
 
     data_train = DataIter(train_img, train_q, train_ans)
     train(net, data_train, ctx)
@@ -134,9 +141,14 @@ if __name__ == '__main__':
     test_ans = DataIter()
     '''
 
-    data_test = DataIter(train_img, train_q, train_ans)
+    data_test = DataIter(test_img, test_q, train_ans)
     # vid_list is something get from video_idx_dict.json
-    vid_list = ['ZJL963', 'ZJL2495', 'ZJL3540']
+
+    vid_dict = json.load(open('feature/video_idx_dict.json'))
+    vid_list = []
+    for k in vid_dict:
+        vid_list.append(vid_dict[k])
+
     ans_idx = predict(net, data_test, ctx, vid_list)
 
     ans_dict = json.load(open('feature/ans_dict.json'))
