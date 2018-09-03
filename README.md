@@ -41,7 +41,7 @@ ZJ杯视频识别
       ---train.txt
       ---test.txt
       ---submit.txt
-      get_video_frame.py
+      get_video_frame.py    # this .py is not necessary for program running
     feature
       glove_model
         ---glove.6B.zip
