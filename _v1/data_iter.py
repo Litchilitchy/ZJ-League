@@ -1,5 +1,6 @@
 import numpy as np
 import mxnet as mx
+import mxnet.ndarray as nd
 
 
 class DataIter(mx.io.DataIter):
@@ -20,10 +21,9 @@ class DataIter(mx.io.DataIter):
         self.cur_idx = 0
 
     def next(self):
-        if self.cur_idx == len(self.idx):
-            raise StopIteration
 
-        self.cur_idx += 1
+        if self.cur_idx >= len(self.idx):
+            raise StopIteration
 
         image = []
         question = []
@@ -34,10 +34,17 @@ class DataIter(mx.io.DataIter):
         for i in range(15):
             image_cat.append(image)
         for question_idx in range(5*self.cur_idx, 5*self.cur_idx+5):
-            question.append(self.question[question_idx])
+
             for answer_idx in range(3*question_idx, 3*question_idx+3):
+                question.append(self.question[question_idx])
                 answer.append(self.answer[answer_idx])
 
+        image_cat = nd.array(image_cat)
+        question = nd.array(question)
+        answer = nd.array(answer)
         data = [image_cat, question]
+
+        self.cur_idx += 1
+
         return mx.io.DataBatch(data, [answer])
 

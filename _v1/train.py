@@ -66,17 +66,36 @@ def train(net, data_train, ctx=mx.cpu()):
             net.save_params('vqa-mlp-%d.params' % (e))
 
 
-def output_data(ans=[[]], map_index_to_vid={}):
-    with open('submit.txt', 'w') as f:
-        for i in range(len(map_index_to_vid)):
-            line = ""
-            line += map_index_to_vid[i] + ','
-            for j in range(5):
+def output_data(idx_to_ans={}, vid_to_ans={}):
+    with open('test.txt', 'r') as f:
 
-                if i != 4:
-                    line += ','
-            line += '\n'
-            f.write(line)
+        with open('submit.txt', 'w') as out:
+            for line in f:
+                line = line.split(',')
+                assert len(line) == 21
+                vid = line[0]
+                q = []
+                for i in range(1, 21, 4):
+                    q.append(line[i])
+
+                ans = ''
+                ans += vid
+                ans += ','
+                for i in range(5):
+                    ans += q[i]
+                    ans += ','
+                    tp = np.argsort(vid_to_ans[vid][i].asnumpy())[-3:].tolist()
+                    for j in range(3):
+                        if tp[j] > len(idx_to_ans):
+                            tp[j] = str(0)
+                        else:
+                            tp[j] = str(tp[j])
+
+                    ans += idx_to_ans[tp[0]] + ',' + idx_to_ans[tp[1]] + ',' + idx_to_ans[tp[2]]
+                    if i != 4:
+                        ans += ','
+                ans += '\n'
+                out.write(ans)
     return
 
 
@@ -92,6 +111,10 @@ def predict(net, data_test, ctx=mx.cpu(), vid_list=[]):
             # label = batch.label[0].as_in_context(ctx)
             # label_one_hot = nd.one_hot(label, 10)
             output = net(data)
+            '''
+            if vid_list[i] not in ans:
+                ans[vid_list[i]] = []
+            ans[vid_list[i]].append(output)'''
             ans[vid_list[i]] = output
 
     return ans
@@ -102,9 +125,12 @@ if __name__ == '__main__':
     ctx = mx.cpu()
     net = model.Net1()
     net.collect_params().initialize(mx.init.Xavier(), ctx)
-    train_img = np.load('feature/image.npy')
-    train_ans = np.load('feature/answer.npy')
-    train_q = np.load('feature/question.npy')
+    train_img = np.load('feature/train_image.npy')
+    train_ans = np.load('feature/train_answer.npy')
+    train_q = np.load('feature/train_question.npy')
+
+    test_img = np.load('feature/test_image.npy')
+    test_q = np.load('feature/test_question.npy')
 
     data_train = DataIter(train_img, train_q, train_ans)
     train(net, data_train, ctx)
@@ -115,10 +141,17 @@ if __name__ == '__main__':
     test_ans = DataIter()
     '''
 
-    data_test = DataIter(train_img, train_q, train_ans)
-    ans_idx = predict(net, data_test, ctx)
+    data_test = DataIter(test_img, test_q, train_ans)
+    # vid_list is something get from video_idx_dict.json
 
-    ans_dict = json.load('feature/ans_dict.json')
-    ans = ans_dict[ans_idx]
-    output_data(ans)
+    vid_dict = json.load(open('feature/video_idx_dict_test.json'))
+    vid_list = []
+    for k in vid_dict:
+        vid_list.append(vid_dict[k])
+
+    ans_idx = predict(net, data_test, ctx, vid_list)
+
+    ans_dict = json.load(open('feature/ans_dict.json'))
+
+    output_data(ans_dict, ans_idx)
 
