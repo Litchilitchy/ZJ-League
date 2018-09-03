@@ -67,9 +67,9 @@ def train(net, data_train, ctx=mx.cpu()):
 
 
 def output_data(idx_to_ans={}, vid_to_ans={}):
-    with open('test.txt', 'r') as f:
+    with open('data/test.txt', 'r') as f:
 
-        with open('submit.txt', 'w') as out:
+        with open('data/submit.txt', 'w') as out:
             for line in f:
                 line = line.split(',')
                 assert len(line) == 21
@@ -144,7 +144,7 @@ if __name__ == '__main__':
     data_test = DataIter(test_img, test_q, train_ans)
     # vid_list is something get from video_idx_dict.json
 
-    vid_dict = json.load(open('feature/video_idx_dict_test.json'))
+    vid_dict = json.load(open('feature/video_idx_dict.json'))
     vid_list = []
     for k in vid_dict:
         vid_list.append(vid_dict[k])
