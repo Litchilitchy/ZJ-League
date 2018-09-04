@@ -72,4 +72,16 @@ ZJ杯视频识别
 以上这个模型作为最终参考版本，由于这个模型有一定的复杂度，我们不直接上它，下面的模型从比较简单的开始实验，并做记录
 
 ##### v1 模型
-采用2048的一维图片向量和一维词向量
+采用`shape=(2048,)`的一维图片向量，三张图片通过拼接得到`shape=(6144,)`和`shape=(100,)`一维词向量
+
+**Time:** 
+
+extract image feature (`extract_image.py`): 13 min per 500 images
+
+extract question feature (`extract_question.py`): 比图片提取快很多
+
+train (`train.py`):  
+
+**Accuracy:**
+
+
