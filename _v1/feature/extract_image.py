@@ -38,11 +38,23 @@ def output_image_feature(data_path, is_test=False):
     file_list = os.listdir(data_path)
     file_list.sort()
 
+    cnt = 0
+
     for filename in file_list:
         if filename.split('.')[1] != 'jpg':
             continue
         feature = get_image_feature(data_path + filename).asnumpy()
         image_feature.append(feature)
+
+        cnt += 1
+        if cnt % 100 == 0:
+            cnt = 0
+            ps = None
+            if is_test:
+                ps = 'test image'
+            else:
+                ps = 'train image'
+            print('100 of %s is processed' % (ps))
 
     image_feature_nd = np.vstack(image_feature)
     if is_test:

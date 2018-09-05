@@ -80,7 +80,8 @@ def load_glove(data_dir_path=None, embedding_dim=None):
     return _word2em
 
 
-def get_qa_pair_from_line(line, word_emd_dict={}, ans_dict={}, emb_dim=100):
+def get_qa_pair_from_line(line, word_emd_dict={}, ans_dict={},
+                          emb_dim=100):
     buff = line.split(',')
 
     if (len(buff) - 1) % 4 != 0:
@@ -139,8 +140,9 @@ def output_question_feature(data_path, word_emd_dict={}, is_test=False):
             feature = get_qa_pair_from_line(line, word_emd_dict, ans_dict)
             question_feature.append(feature)
 
-    with open('ans_dict.json', 'w') as f:
-        json.dump(ans_dict, f)
+    if not is_test:
+        with open('ans_dict.json', 'w') as f:
+            json.dump(ans_dict, f)
 
     question_feature.sort()
 
