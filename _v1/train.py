@@ -12,8 +12,6 @@ import model
 
 
 def evaluate_accuracy(data_iterator, net, ctx=mx.cpu()):
-    numerator = 0.
-    denominator = 0.
     metric = mx.metric.Accuracy()
     data_iterator.reset()
     for i, batch in enumerate(data_iterator):
@@ -32,7 +30,7 @@ def train(net, data_train, ctx=mx.cpu()):
     trainer = gluon.Trainer(net.collect_params(), 'sgd', {'learning_rate': 0.01})
     loss = gluon.loss.SoftmaxCrossEntropyLoss()
 
-    epochs = 10
+    epochs = 1
     moving_loss = 0.
     best_eva = 0
     for e in range(epochs):
@@ -51,10 +49,13 @@ def train(net, data_train, ctx=mx.cpu()):
             ##########################
             #  Keep a moving average of the losses
             ##########################
-            if i == 0:
-                moving_loss = np.mean(cross_entropy.asnumpy()[0])
-            else:
-                moving_loss = .99 * moving_loss + .01 * np.mean(cross_entropy.asnumpy()[0])
+            moving_loss = np.mean(cross_entropy.asnumpy()[0])
+
+            #if i == 0:
+            #    moving_loss = np.mean(cross_entropy.asnumpy()[0])
+            #else:
+            #    moving_loss = .99 * moving_loss + .01 * np.mean(cross_entropy.asnumpy()[0])
+
             # if i % 200 == 0:
             #    print("Epoch %s, batch %s. Moving avg of loss: %s" % (e, i, moving_loss))
 
@@ -71,7 +72,7 @@ def output_data(idx_to_ans={}, vid_to_ans={}):
 
         with open('data/submit.txt', 'w') as out:
             for line in f:
-                line = line.split(',')
+                line = line.strip('\n').split(',')
                 assert len(line) == 21
                 vid = line[0]
                 q = []
@@ -84,6 +85,8 @@ def output_data(idx_to_ans={}, vid_to_ans={}):
                 for i in range(5):
                     ans += q[i]
                     ans += ','
+                    if vid not in vid_to_ans.keys():
+                        continue
                     tp = np.argsort(vid_to_ans[vid][i].asnumpy())[-3:].tolist()
                     for j in range(3):
                         if tp[j] > len(idx_to_ans):
@@ -150,6 +153,8 @@ if __name__ == '__main__':
         vid_list.append(vid_dict[k])
 
     ans_idx = predict(net, data_test, ctx, vid_list)
+    with open('_check_ans.json', 'w') as f:
+        json.dump(ans_idx, f)
 
     ans_dict = json.load(open('feature/ans_dict.json'))
 
