@@ -82,7 +82,7 @@ def load_glove(data_dir_path=None, embedding_dim=None):
 
 def get_qa_pair_from_line(line, word_emd_dict={}, ans_dict={},
                           emb_dim=100):
-    buff = line.split(',')
+    buff = line.strip('\n').split(',')
 
     if (len(buff) - 1) % 4 != 0:
         raise AssertionError("qa length error, not times of 4")
