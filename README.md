@@ -80,9 +80,9 @@ extract image feature (`extract_image.py`): 13 min per 500 images
 
 extract question feature (`extract_question.py`): 比图片提取快很多
 
-train (`train.py`): 70M 的数据读入比 vqa demo 的300M 数据读入慢很多，当前读入方法为，将`npy`文件load，使用`list`进行1-d `ndarray`的拼接，最后使用`np.array`转换成2-d `ndarray`
+train (`train.py`): 主要消耗为训练时间，相比之下，load data 和 predict 的时间可以忽略不计
 
-时间优化：初步判断由`list`到`nparray`转换过于耗时，先加入时间戳进行测试
+时间优化：
 
 **Accuracy:**
 
