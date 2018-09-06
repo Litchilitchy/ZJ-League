@@ -82,8 +82,11 @@ extract question feature (`extract_question.py`): 比图片提取快很多
 
 train (`train.py`): 主要消耗为训练时间，相比之下，load data 和 predict 的时间可以忽略不计
 
-时间优化：
+时间优化：1.并行处理图片特征
 
 **Accuracy:**
 
+数据缺失时容易出BUG，准确率不可靠，直接进入v2模型
 
+##### v2 模型
+采用`shape=(2048,)`的一维图片向量和`shape=(100,)`一维词向量
