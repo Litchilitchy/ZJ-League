@@ -31,11 +31,11 @@ def train(net, data_train, ctx=mx.cpu()):
     trainer = gluon.Trainer(net.collect_params(), 'sgd', {'learning_rate': 0.01})
     loss = gluon.loss.SoftmaxCrossEntropyLoss()
 
-    epochs = 1
+    epochs = 10
     moving_loss = 0.
     best_eva = 0
     for e in range(epochs):
-
+        data_train.reset()
         for i, batch in enumerate(data_train):
             data1 = batch.data[0].as_in_context(ctx)
             data2 = batch.data[1].as_in_context(ctx)
@@ -86,16 +86,12 @@ def output_data(idx_to_ans={}, vid_to_ans={}):
                 for i in range(5):
                     ans += q[i]
                     ans += ','
-                    if vid not in vid_to_ans.keys():
-                        continue
-                    tp = np.argsort(vid_to_ans[vid][i].asnumpy())[-3:].tolist()
-                    for j in range(3):
-                        if tp[j] > len(idx_to_ans):
-                            tp[j] = str(0)
-                        else:
-                            tp[j] = str(tp[j])
 
-                    ans += idx_to_ans[tp[0]] + ',' + idx_to_ans[tp[1]] + ',' + idx_to_ans[tp[2]]
+                    tp = np.argmax(vid_to_ans[vid][i].asnumpy())
+
+                    if str(tp) not in idx_to_ans:
+                        tp = '0'
+                    ans += idx_to_ans[str(tp)]
                     if i != 4:
                         ans += ','
                 ans += '\n'
@@ -103,9 +99,14 @@ def output_data(idx_to_ans={}, vid_to_ans={}):
     return
 
 
-def predict(net, data_test, ctx=mx.cpu(), vid_list=[]):
+def predict(net, data_test, ctx=mx.cpu()):
     # vid_list store the order of data_test, string type
     # vid_list = [vid1, vid2, vid3, ...]
+    vid_dict = json.load(open('feature/video_idx_dict.json'))
+    vid_list = []
+    for k in vid_dict:
+        vid_list.append(vid_dict[k])
+
     ans = {}
 
     for i, batch in enumerate(data_test):
@@ -123,7 +124,6 @@ def predict(net, data_test, ctx=mx.cpu(), vid_list=[]):
             ans[vid_list[i]] = output
 
     return ans
-    # output = np.argmax(output.asnumpy(), axis=1)
 
 
 if __name__ == '__main__':
@@ -146,32 +146,19 @@ if __name__ == '__main__':
     test_q = np.load('feature/test_question.npy')
     print("Total test question:", test_q.shape[0])
 
-    data_train = DataIter(train_img, train_q, train_ans)
+    data_train = DataIter(train_img, train_q, train_ans, False)
 
     load_time = time()
     log_file.write('data load time cost is ' + str(load_time - init_time) + '\n')
-    #train(net, data_train, ctx)
+    train(net, data_train, ctx)
 
     train_time = time()
     log_file.write('train time cost is ' + str(train_time - load_time) + '\n')
-    ''' use following test data in official training step
-    test_img = DataIter()
-    test_q = DataIter()
-    test_ans = DataIter()
-    '''
 
-    data_test = DataIter(test_img, test_q, train_ans)
-    # vid_list is something get from video_idx_dict.json
+    data_test = DataIter(test_img, test_q, train_ans, True)
 
-    vid_dict = json.load(open('feature/video_idx_dict.json'))
-    vid_list = []
-    for k in vid_dict:
-        vid_list.append(vid_dict[k])
-
-    ans_idx = predict(net, data_test, ctx, vid_list)
+    ans_idx = predict(net, data_test, ctx)
     print('predict result shape is: ', len(ans_idx))
-    # with open('_check_ans.json', 'w') as f:
-    #    json.dump(ans_idx, f)
 
     predict_time = time()
     log_file.write('predict time cost is ' + str(predict_time - train_time) + '\n')
