@@ -195,9 +195,9 @@ def output_question_feature(data_path, word_emd_dict={}, is_test=False):
                 ans_list.append(j)
 
     if is_test:
-        np.save('test_question.npy', q_list)
+        np.save('test_question.npy', np.array(q_list))
     else:
-        np.save('train_question.npy', np.array(q_list))
+        np.save('train_question.npy', q_list)
         np.save('train_answer.npy', ans_list)
 
 
