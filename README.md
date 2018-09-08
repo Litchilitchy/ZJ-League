@@ -93,6 +93,18 @@ train (`train.py`): 主要消耗为训练时间，相比之下，load data 和 p
 
 **Accuracy:**
 
-mini data test accuracy 22% after 10 epochs, training data accuracy 16% after 10 epochs
+mini data test accuracy 22% after 10 epochs (converge), training data accuracy 16% after 10 epochs (converge)
 
+##### v3 模型
+
+
+##### v4 模型
+
+change question feature to 3-d array, with `layout=NTC`
+
+modify the network structure, use lstm with `hidden_layer=16` to process the 3-d array to 2-d array, with each element of the array is a `shape=(1024,)` feature vector
+
+**Accuracy:**
+
+mini data test accuracy 70% after 10 epochs (not converge and continue to be 97% after 30 epochs), training data accuracy  after 10 epochs
 
