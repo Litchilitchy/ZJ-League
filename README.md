@@ -106,5 +106,5 @@ modify the network structure, use lstm with `hidden_layer=16` to process the 3-d
 
 **Accuracy:**
 
-mini data test accuracy 70% after 10 epochs (not converge and continue to be 97% after 30 epochs), training data accuracy  after 10 epochs
+mini data test accuracy 70% after 10 epochs (not converge and continue to be 97% after 30 epochs), training data accuracy 99.97% after 10 epochs
 
