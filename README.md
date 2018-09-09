@@ -1,5 +1,5 @@
 # ZJ-League
-ZJ杯 视频识别
+Alibaba ZJ League Video Question Answering
 
 #### 目录结构
     ---
