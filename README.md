@@ -71,22 +71,7 @@ Alibaba ZJ League Video Question Answering
 
 以上这个模型作为最终参考版本，由于这个模型有一定的复杂度，我们不直接上它，下面的模型从比较简单的开始实验，并做记录
 
-##### v1 模型
-采用`shape=(2048,)`的一维图片向量，三张图片通过拼接得到`shape=(6144,)`和`shape=(100,)`一维词向量
 
-**Time:** 
-
-extract image feature (`extract_image.py`): 13 min per 500 images
-
-extract question feature (`extract_question.py`): 比图片提取快很多
-
-train (`train.py`): 主要消耗为训练时间，相比之下，load data 和 predict 的时间可以忽略不计
-
-时间优化：1.并行处理图片特征
-
-**Accuracy:**
-
-数据缺失时容易出BUG，顺序读取数据（no index）的方式导致单个数据missing时所有数据乱序，难以debug，直接进入v2模型
 
 ##### v2 模型
 采用`shape=(2048,)`的一维图片向量和`shape=(100,)`一维词向量，暂时没有对图片提取进行效率优化
