@@ -71,15 +71,6 @@ Alibaba ZJ League Video Question Answering
 
 以上这个模型作为最终参考版本，由于这个模型有一定的复杂度，我们不直接上它，下面的模型从比较简单的开始实验，并做记录
 
-
-
-##### v2 模型
-采用`shape=(2048,)`的一维图片向量和`shape=(100,)`一维词向量，暂时没有对图片提取进行效率优化
-
-**Accuracy:**
-
-mini data test accuracy 22% after 10 epochs (converge), training data accuracy 16% after 10 epochs (converge)
-
 ##### v3 模型
 
 
