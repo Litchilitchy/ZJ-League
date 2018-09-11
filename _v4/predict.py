@@ -37,6 +37,8 @@ def output_data(idx_to_ans={}, vid_to_ans={}):
     with open('data/test.txt', 'r') as f:
 
         with open('data/submit.txt', 'w') as out:
+
+            rec = open('softmax_record.txt', 'w')
             for line in f:
                 line = line.strip('\n').split(',')
                 assert len(line) == 21
@@ -53,6 +55,9 @@ def output_data(idx_to_ans={}, vid_to_ans={}):
                     ans += ','
 
                     tp = np.argmax(vid_to_ans[vid][i*3].asnumpy())
+                    b = np.max(vid_to_ans[vid][i * 3])
+                    rec.write('answer is ' + str(idx_to_ans[str(tp)]) +
+                          ' with softmax '+str(b)+'\n')
 
                     if str(tp) not in idx_to_ans:
                         tp = '0'
