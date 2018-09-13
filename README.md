@@ -73,5 +73,8 @@ Alibaba ZJ League Video Question Answering
 
 ##### v3 模型
 
-
+### to do
+concat(x1, x2) -> elemwise_mul(x1, x2)
+1 image -> choose the middle period of the video
+3 images -> how to extract from 3 images
 
