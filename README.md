@@ -69,9 +69,7 @@ Alibaba ZJ League Video Question Answering
 
 ![image](https://github.com/SummerLitchy/Zcup/blob/master/_instruction/VQA-attention.png)
 
-先直接搬来一个模型 https://github.com/shiyangdaisy23/vqa-mxnet-gluon/blob/master/Attention-VQA-gluon.ipynb
-
-以上这个模型作为最终参考版本，由于这个模型有一定的复杂度，我们不直接上它，下面的模型从比较简单的开始实验，并做记录
+来源于 https://github.com/shiyangdaisy23/vqa-mxnet-gluon/blob/master/Attention-VQA-gluon.ipynb
 
 ##### v3 模型
 
