@@ -10,13 +10,14 @@ import mxnet.gluon as gluon
 from mxnet.gluon import nn
 from mxnet import autograd
 
+from evaluate import evaluate_accuracy
 import model
 
 
 def load_params(net, data_path, ctx=mx.cpu()):
     file_list = os.listdir(data_path)
     best_params = None
-    max_idx = 0
+    max_idx = -1
     for f in file_list:
         seg = f.split('.')
         if len(seg) != 2 or seg[1] != 'params':
@@ -27,36 +28,17 @@ def load_params(net, data_path, ctx=mx.cpu()):
             best_params = f
     if best_params:
         net.load_params(best_params, ctx)
+        print('best params file loaded', best_params)
     else:
         net.collect_params().initialize(mx.init.Xavier(), ctx)
-    return max_idx
-
-
-def evaluate_accuracy(data_iterator, net, ctx=mx.cpu()):
-    metric = mx.metric.Accuracy()
-    data_iterator.reset()
-    for i, batch in enumerate(data_iterator):
-        with autograd.record():
-            data1 = batch.data[0].as_in_context(ctx)
-            data2 = batch.data[1].as_in_context(ctx)
-            data = [data1, data2]
-            label = batch.label[0].as_in_context(ctx)
-            output = net(data)
-
-            check_output = np.argmax(output, axis=1)
-            l = []
-            for id in output:
-                l.append(str(np.argmax(id.asnumpy())))
-
-        metric.update([label], [output])
-    return metric.get()[1]
+    return max_idx+1
 
 
 def train(net, data_train, start_epoch=0, ctx=mx.cpu()):
     trainer = gluon.Trainer(net.collect_params(), 'sgd', {'learning_rate': 0.01})
     loss = gluon.loss.SoftmaxCrossEntropyLoss()
 
-    epochs = 10
+    epochs = 20
     moving_loss = 0.
     best_eva = 0
     for e in range(start_epoch, epochs):
