@@ -18,7 +18,7 @@ Alibaba ZJ League Video Question Answering
       
 以上为github中目录，使用时需先copy以上目录到项目路径，另外，实际使用目录变更如下：
 
-Above is the contents in github, before official run, first copy the contents above to your project dir. Additionally, there are several more operations during official run
+Above is the contents on github, before official run, first copy the contents above to your project dir. Additionally, there are several more operations during official run
 
 需要用到视频关键帧截取`get_video_frame.py`（此模块在`data`文件夹下），输出图片（每个视频自定义张数）作为训练数据，和原训练文本数据一起放在根目录下的文件夹中，并命名为`train_img, test_img`
 
@@ -63,9 +63,15 @@ The overall contents is as following, and `data` dir on github only contains ver
 #### 训练方法 Training Steps
 `feature`文件夹中的`extract_image`和`extract_question`可以单独运行，先分别运行一次，生成`train.py`中需要的`.npy`文件，作为提取特征的预训练
 
+The program `extract_image.py` and `extract_question.py` can run seperately, first run each of them to get the feature `.npy` file, which will be needed in training steps
+
 `model`为模型，`data_iter`中为读取预训练生成的`.npy`数据的方法
 
+`model.py` is the model file, and `data_iter.py` contains the iterator to generated the data batch from the feature file `.npy`
+
 运行结束`feature`文件夹中的代码后，运行`train.py`生成answer数据输出
+
+Once get the `.npy` after running the `.py` program in `feature` dir, run `python train.py` to get the answer
       
 ### 方法
       
