@@ -65,12 +65,11 @@ data_path = {'train': './../data/train_img/',
              'test': './../data/test_img/'}
 
 
-def output_image_feature(mode=None):
+def output_image_feature(mode=None, val_cut_idx=0):
     image_feature = []
+
     file_list = os.listdir(data_path[mode])
     file_list.sort()
-
-    cnt = 0
 
     processed_img_num, processed_img_filename = get_processed_state(mode)
     cur_img_idx = 0
@@ -78,9 +77,14 @@ def output_image_feature(mode=None):
         image_feature = np.load(processed_img_filename).tolist()
 
     for filename in file_list:
-        if cur_img_idx != processed_img_num:
-            cur_img_idx += 1
+        if mode == 'val' and cur_img_idx - val_cut_idx < processed_img_num:
             continue
+        elif cur_img_idx < processed_img_num:
+            continue
+
+        if cur_img_idx >= val_cut_idx and mode == 'train':
+            break
+        cur_img_idx += 1
 
         f = filename.split('.')
         if len(f) == 1 or f[1] != 'jpg':
@@ -88,13 +92,12 @@ def output_image_feature(mode=None):
         feature = get_image_feature(data_path[mode] + filename).asnumpy()
         image_feature.append(feature)
 
-        cnt += 1
-        if cnt % 100 == 0:
+        if cur_img_idx % 100 == 0:
             print('100 of %s image is processed' % mode)
-        if cnt % 1000 == 0:
+        if cur_img_idx % 1000 == 0:
             tmp_nd = np.vstack(image_feature)
 
-            np.save('tmp/' + mode + '-' + str(cnt) + '.npy', tmp_nd)
+            np.save('tmp/' + mode + '-' + str(cur_img_idx) + '.npy', tmp_nd)
 
     image_feature_nd = np.vstack(image_feature)
     print('check final shape', image_feature_nd.shape)
@@ -105,6 +108,6 @@ def output_image_feature(mode=None):
     # feature shape (2048, )
 
 
-output_image_feature('train')
-output_image_feature('val')
-output_image_feature('test')
+output_image_feature(mode='train', val_cut_idx=3000)
+output_image_feature(mode='val', val_cut_idx=3000)
+output_image_feature(mode='test')

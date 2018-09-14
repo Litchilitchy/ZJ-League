@@ -80,8 +80,7 @@ def load_glove(data_dir_path=None, embedding_dim=None):
     return _word2em
 
 
-def get_qa_pair_from_line(line, word_emd_dict={}, ans_dict={},
-                          emb_dim=100):
+def get_qa_pair_from_line(line, word_emd_dict={}, ans_dict={}):
     buff = line.strip('\n').split(',')
 
     if (len(buff) - 1) % 4 != 0:
@@ -90,7 +89,6 @@ def get_qa_pair_from_line(line, word_emd_dict={}, ans_dict={},
         raise AssertionError("qa length error, not 5 questions")
 
     qa_content = []
-
     qa_content.append(buff[0])
 
     # every questions has 3 answers, 3+1 = 4
@@ -137,7 +135,6 @@ def get_qa_pair_from_line(line, word_emd_dict={}, ans_dict={},
         # for the 3 questions, i+1 to i+3
         # ans1, ans2, ans3
         for j in range(i+1, i+4):
-            ans = 0
             ans_sentence = buff[j]
 
             if ans_sentence not in ans_dict.values():
@@ -162,18 +159,24 @@ train_data, val_data, test_data = data_files
 test_q, v_idx, ans_idx = output_files['test']
 
 
-def get_feature_from_data(mode=None, word_emd_dict={}, ans_dict={}):
+def get_feature_from_data(mode=None, val_cut_idx=0, word_emd_dict={}, ans_dict={}):
     question_feature = []
     with open(data_files[mode]) as f:
         for line in f:
             feature = get_qa_pair_from_line(line, word_emd_dict, ans_dict)
             question_feature.append(feature)
 
-    output_feature_to_npy(question_feature, mode)
+    question_feature.sort()
+    if mode == 'train':
+        output_feature_to_npy(question_feature[:val_cut_idx], 'train')
+        output_feature_to_npy(question_feature[val_cut_idx:], 'val')
+    else:
+        output_feature_to_npy(question_feature, mode)
     return
 
 
 def output_feature_to_npy(feature=[], mode=None):
+    assert len(feature) != 0
     feature.sort()
 
     q_list = []
@@ -196,16 +199,17 @@ def output_feature_to_npy(feature=[], mode=None):
         np.save(output_files[mode][1], ans_list)
 
 
-def output_question_feature(word_emd_dict={}):
+def output_question_feature(word_emd_dict={}, val_cut_idx=0):
     ans_dict = {}
-    get_feature_from_data('train', word_emd_dict, ans_dict)
+    get_feature_from_data('train', val_cut_idx=val_cut_idx,
+                          word_emd_dict=word_emd_dict, ans_dict=ans_dict)
     with open(ans_idx, 'w') as f:
         json.dump(ans_dict, f)
 
-    get_feature_from_data('val', word_emd_dict, ans_dict)
-    get_feature_from_data('test', word_emd_dict, ans_dict)
+    get_feature_from_data('test', val_cut_idx=val_cut_idx,
+                          word_emd_dict=word_emd_dict, ans_dict=ans_dict)
 
 
 word_dict = load_glove('./glove_model')
-output_question_feature(word_emd_dict=word_dict)
+output_question_feature(word_emd_dict=word_dict, val_cut_idx=3000)
 
