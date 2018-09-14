@@ -147,60 +147,65 @@ def get_qa_pair_from_line(line, word_emd_dict={}, ans_dict={},
                 ans = [k for k, v in ans_dict.items() if v == ans_sentence][0]
             qa_content.append(ans)
 
-            '''ans_words = ans_sentence.strip('\n').split(' ')            
-            for ans in ans_words:
-                if ans not in word_emd_dict:
-                    continue
-                ans_vec += word_emd_dict[ans]
-            qa_content.append(ans_vec)'''
-
     # [video_id, [q1], [a],[b],[c], [q2], [a],[b],[c] ]
     # [q][a][b][c] are 1-d vectors
     return qa_content
 
 
-def output_question_feature(data_path, word_emd_dict={}, is_test=False):
-    question_feature = []
+data_files = {'train': './../data/train.txt',
+              'val': './../data/val.txt',
+              'test': './../data/test.txt'}
+output_files = {'train': ('train_question.npy', 'train_answer.npy'),
+                'val': ('val_question.npy', 'val_answer.npy'),
+                'test': ('test_question.npy', 'video_idx_dict.json', 'ans_dict.json')}
+train_data, val_data, test_data = data_files
+test_q, v_idx, ans_idx = output_files['test']
 
-    ans_dict = {}
-    with open(data_path) as f:
+
+def get_feature_from_data(mode=None, word_emd_dict={}, ans_dict={}):
+    question_feature = []
+    with open(data_files[mode]) as f:
         for line in f:
             feature = get_qa_pair_from_line(line, word_emd_dict, ans_dict)
             question_feature.append(feature)
 
-    if not is_test:
-        with open('ans_dict.json', 'w') as f:
-            json.dump(ans_dict, f)
+    output_feature_to_npy(question_feature, mode)
+    return
 
-    question_feature.sort()
 
-    video_idx_dict = {}
-
-    for q in question_feature:
-        video_idx_dict[len(video_idx_dict)] = q[0]
-
-    if is_test:
-        video_idx_dict_name = 'video_idx_dict.json'
-        with open(video_idx_dict_name, 'w') as f:
-            json.dump(video_idx_dict, f)
-    else:
-        video_idx_dict_name = 'video_idx_dict_train.json'
+def output_feature_to_npy(feature=[], mode=None):
+    feature.sort()
 
     q_list = []
     ans_list = []
-    for question in question_feature:
+    for question in feature:
         for i in range(1, len(question), 4):
             q_list.append(question[i])
             for j in range(i+1, i+4):
                 ans_list.append(question[j])
 
-    if is_test:
-        np.save('test_question.npy', np.array(q_list))
+    if mode == 'test':
+        video_idx_dict = {}
+        for q in feature:
+            video_idx_dict[len(video_idx_dict)] = q[0]
+        with open(v_idx, 'w') as f:
+            json.dump(video_idx_dict, f)
+        np.save(test_q, q_list)
     else:
-        np.save('train_question.npy', q_list)
-        np.save('train_answer.npy', ans_list)
+        np.save(output_files[mode][0], q_list)
+        np.save(output_files[mode][1], ans_list)
+
+
+def output_question_feature(word_emd_dict={}):
+    ans_dict = {}
+    get_feature_from_data('train', word_emd_dict, ans_dict)
+    with open(ans_idx, 'w') as f:
+        json.dump(ans_dict, f)
+
+    get_feature_from_data('val', word_emd_dict, ans_dict)
+    get_feature_from_data('test', word_emd_dict, ans_dict)
 
 
 word_dict = load_glove('./glove_model')
-output_question_feature('./../data/train.txt', word_dict, False)
-output_question_feature('./../data/test.txt', word_dict, True)
+output_question_feature(word_emd_dict=word_dict)
+
