@@ -164,7 +164,7 @@ def output_question_feature(data_path, word_emd_dict={}, is_test=False):
         for i in range(1, len(question), 4):
             q_list.append(question[i])
             for j in range(i+1, i+4):
-                ans_list.append(j)
+                ans_list.append(question[j])
 
     if is_test:
         np.save('test_question.npy', q_list)
