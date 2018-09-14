@@ -34,7 +34,7 @@ def load_params(net, data_path, ctx=mx.cpu()):
     return max_idx+1
 
 
-def train(net, data_train, start_epoch=0, ctx=mx.cpu()):
+def train(net, data_train, data_val, start_epoch=0, ctx=mx.cpu()):
     trainer = gluon.Trainer(net.collect_params(), 'sgd', {'learning_rate': 0.01})
     loss = gluon.loss.SoftmaxCrossEntropyLoss()
 
@@ -68,8 +68,9 @@ def train(net, data_train, start_epoch=0, ctx=mx.cpu()):
             #    print("Epoch %s, batch %s. Moving avg of loss: %s" % (e, i, moving_loss))
 
         train_accuracy = evaluate_accuracy(data_train, net)
-        print("Epoch %s. Loss: %s, Train_acc %s" % (e, moving_loss, train_accuracy))
-        if train_accuracy > best_eva:
+        val_accuracy = evaluate_accuracy(data_val, net)
+        print("Epoch %s. Loss: %s, Train_acc %s, Eval_acc %s" % (e, moving_loss, train_accuracy, val_accuracy))
+        if val_accuracy > best_eva:
             best_eva = train_accuracy
             logging.info('Best validation acc found. Checkpointing...')
             net.save_params('vqa-mlp-%d.params' % (e))
@@ -134,10 +135,7 @@ def predict(net, data_test, ctx=mx.cpu()):
 
 
 if __name__ == '__main__':
-    log_file = open('time_log', 'w')
     ctx = mx.cpu()
-
-    start_time = time()
 
     ans_dict = json.load(open('feature/ans_dict.json'))
     num_category = len(ans_dict)
@@ -145,36 +143,23 @@ if __name__ == '__main__':
 
     start_epoch = load_params(net, './', ctx)
 
-    init_time = time()
-    log_file.write('init time cost is ' + str(init_time-start_time) + '\n')
-
     train_img = np.load('feature/train_image.npy')
     train_ans = np.load('feature/train_answer.npy')
     train_q = np.load('feature/train_question.npy')
-
+    val_img = np.load('feature/val_image.npy')
+    val_ans = np.load('feature/val_answer.npy')
+    val_q = np.load('feature/val_question.npy')
     test_img = np.load('feature/test_image.npy')
-    print("Total test image:", test_img.shape[0])
     test_q = np.load('feature/test_question.npy')
+    print("Total test image:", test_img.shape[0])
     print("Total test question:", test_q.shape[0])
 
     data_train = DataIter(train_img, train_q, train_ans, False)
-
-    load_time = time()
-    log_file.write('data load time cost is ' + str(load_time - init_time) + '\n')
-    train(net, data_train, start_epoch=start_epoch, ctx=ctx)
-
-    train_time = time()
-    log_file.write('train time cost is ' + str(train_time - load_time) + '\n')
+    data_val = DataIter(val_img, val_q, val_ans, False)
+    train(net, data_train, data_val, start_epoch=start_epoch, ctx=ctx)
 
     data_test = DataIter(test_img, test_q, train_ans, True)
-
     ans_idx = predict(net, data_test, ctx)
-    print('predict result shape is: ', len(ans_idx))
-
-    predict_time = time()
-    log_file.write('predict time cost is ' + str(predict_time - train_time) + '\n')
-    log_file.close()
-
 
     output_data(ans_dict, ans_idx)
 
