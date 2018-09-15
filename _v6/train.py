@@ -40,7 +40,8 @@ def train(net, data_train, data_val, start_epoch=0, ctx=mx.cpu()):
 
     epochs = 20
     moving_loss = 0.
-    best_eva = 0
+    best_eva = evaluate_accuracy(data_val, net)
+    print('current best val acc is ', best_eva)
     for e in range(start_epoch, epochs):
         data_train.reset()
         for i, batch in enumerate(data_train):
