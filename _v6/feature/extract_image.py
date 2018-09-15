@@ -40,6 +40,7 @@ def get_processed_state(mode=None):
 
     file_list = os.listdir(tmp_path)
     idx = 0
+
     best_filename = None
     pre_str = mode
 
@@ -61,30 +62,34 @@ def get_processed_state(mode=None):
 
 
 data_path = {'train': './../data/train_img/',
-             'val': './../data/val_img/',
+             'val': './../data/train_img/',
              'test': './../data/test_img/'}
 
 
 def output_image_feature(mode=None, val_cut_idx=0):
     image_feature = []
 
+    if os.path.exists(mode+'_image.npy'):
+        print(mode+'_image.npy exists, skip')
+        return
     file_list = os.listdir(data_path[mode])
     file_list.sort()
 
+    print('curremt mode is', mode, 'file length', len(file_list))
     processed_img_num, processed_img_filename = get_processed_state(mode)
-    cur_img_idx = 0
+    cur_img_idx = -1
     if processed_img_num != 0:
         image_feature = np.load(processed_img_filename).tolist()
+    elif mode == 'val':  # start from beginning
+        processed_img_num = val_cut_idx
 
     for filename in file_list:
-        if mode == 'val' and cur_img_idx - val_cut_idx < processed_img_num:
-            continue
-        elif cur_img_idx < processed_img_num:
+        cur_img_idx += 1
+        if cur_img_idx < processed_img_num:
             continue
 
         if cur_img_idx >= val_cut_idx and mode == 'train':
             break
-        cur_img_idx += 1
 
         f = filename.split('.')
         if len(f) == 1 or f[1] != 'jpg':
@@ -92,13 +97,14 @@ def output_image_feature(mode=None, val_cut_idx=0):
         feature = get_image_feature(data_path[mode] + filename).asnumpy()
         image_feature.append(feature)
 
-        if cur_img_idx % 100 == 0:
+        if (cur_img_idx+1) % 100 == 0:
             print('100 of %s image is processed' % mode)
-        if cur_img_idx % 1000 == 0:
+        if (cur_img_idx+1) % 1000 == 0:
             tmp_nd = np.vstack(image_feature)
 
             np.save('tmp/' + mode + '-' + str(cur_img_idx) + '.npy', tmp_nd)
 
+    assert len(image_feature) != 0
     image_feature_nd = np.vstack(image_feature)
     print('check final shape', image_feature_nd.shape)
 
