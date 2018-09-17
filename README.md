@@ -73,17 +73,13 @@ The program `extract_image.py` and `extract_question.py` can run seperately, fir
 
 Once get the `.npy` after running the `.py` program in `feature` dir, run `python train.py` to get the answer
       
-### 方法
-      
-#### 视频关键帧提取      
+### 方法    
    
 #### image-question模型
 
 ![image](https://github.com/SummerLitchy/Zcup/blob/master/_instruction/VQA-attention.png)
 
 来源于 https://github.com/shiyangdaisy23/vqa-mxnet-gluon/blob/master/Attention-VQA-gluon.ipynb
-
-##### v3 模型
 
 ### log
 v1: can not be used
@@ -100,9 +96,4 @@ v6: change concat to element_mul, cross validation added
 
 v7: 5 image per video, lstm
 
-
-### to do
-concat(x1, x2) -> elemwise_mul(x1, x2)
-1 image -> choose the middle period of the video
-3 images -> how to extract from 3 images
 
