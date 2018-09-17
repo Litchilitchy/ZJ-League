@@ -85,6 +85,22 @@ Once get the `.npy` after running the `.py` program in `feature` dir, run `pytho
 
 ##### v3 模型
 
+### log
+v1: can not be used
+
+v2: word emd only, 1 image per video, concat
+
+v3: to be added
+
+v4: lstm added
+
+v5: evaluate added
+
+v6: change concat to element_mul, cross validation added
+
+v7: 5 image per video, lstm
+
+
 ### to do
 concat(x1, x2) -> elemwise_mul(x1, x2)
 1 image -> choose the middle period of the video
