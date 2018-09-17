@@ -152,8 +152,9 @@ if __name__ == '__main__':
     val_q = np.load('feature/val_question.npy')
     test_img = np.load('feature/test_image.npy')
     test_q = np.load('feature/test_question.npy')
-    print("Total test image:", test_img.shape[0])
-    print("Total test question:", test_q.shape[0])
+    print("Total train image:", train_img.shape, "Total train question:", train_q.shape,"Total train ans:", train_ans.shape)
+    print("Total val image:", val_img.shape, "Total val question:", val_q.shape,"Total val ans:", val_ans.shape)
+    print("Total test image:", test_img.shape, "Total test question:", test_q.shape)
 
     data_train = DataIter(train_img, train_q, train_ans, False)
     data_val = DataIter(val_img, val_q, val_ans, False)

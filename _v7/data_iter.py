@@ -5,7 +5,7 @@ import mxnet.ndarray as nd
 
 class DataIter(mx.io.DataIter):
     def __init__(self, image, question, answer, is_test):
-        print('image sample', len(image), 'question sample', len(question),'answer sample', len(answer))
+
         assert len(image)*5 == len(question)
         if not is_test:
             assert len(image)*15 == len(answer)
