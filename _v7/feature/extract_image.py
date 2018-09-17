@@ -66,8 +66,10 @@ data_path = {'train': './../data/train_img/',
              'test': './../data/test_img/'}
 
 
-def output_image_feature(mode=None, val_cut_idx=0):
+def output_image_feature(mode=None, val_cut_idx=0, frame_per_video=0):
     image_feature = []
+    val_cut_idx = val_cut_idx * frame_per_video
+    print('current cut image to val as ', val_cut_idx)
 
     if os.path.exists(mode+'_image.npy'):
         print(mode+'_image.npy exists, skip')
@@ -83,6 +85,7 @@ def output_image_feature(mode=None, val_cut_idx=0):
     elif mode == 'val':  # start from beginning
         processed_img_num = val_cut_idx
 
+    video_feature = []
     for filename in file_list:
         cur_img_idx += 1
         if cur_img_idx < processed_img_num:
@@ -94,15 +97,20 @@ def output_image_feature(mode=None, val_cut_idx=0):
         f = filename.split('.')
         if len(f) == 1 or f[1] != 'jpg':
             continue
+
         feature = get_image_feature(data_path[mode] + filename).asnumpy()
-        image_feature.append(feature)
+
+        video_feature.append(feature)
+        if (cur_img_idx+1) % frame_per_video == 0:
+            image_feature.append(video_feature)
+            video_feature = []
 
         if (cur_img_idx+1) % 100 == 0:
             print('100 of %s image is processed' % mode)
         if (cur_img_idx+1) % 1000 == 0:
             tmp_nd = np.vstack(image_feature)
-
-            np.save('tmp/' + mode + '-' + str(cur_img_idx) + '.npy', tmp_nd)
+            print(tmp_nd.shape)
+            np.save('tmp/' + mode + '-' + str(cur_img_idx+1) + '.npy', tmp_nd)
 
     assert len(image_feature) != 0
     image_feature_nd = np.vstack(image_feature)
@@ -114,6 +122,6 @@ def output_image_feature(mode=None, val_cut_idx=0):
     # feature shape (2048, )
 
 
-output_image_feature(mode='train', val_cut_idx=3000)
-output_image_feature(mode='val', val_cut_idx=3000)
-output_image_feature(mode='test')
+output_image_feature(mode='train', val_cut_idx=3000, frame_per_video=5)
+output_image_feature(mode='val', val_cut_idx=3000, frame_per_video=5)
+output_image_feature(mode='test', frame_per_video=5)
