@@ -72,7 +72,7 @@ def train(net, data_train, data_val, start_epoch=0, ctx=mx.cpu()):
         val_accuracy = evaluate_accuracy(data_val, net)
         print("Epoch %s. Loss: %s, Train_acc %s, Eval_acc %s" % (e, moving_loss, train_accuracy, val_accuracy))
         if val_accuracy > best_eva:
-            best_eva = train_accuracy
+            best_eva = val_accuracy
             logging.info('Best validation acc found. Checkpointing...')
             net.save_params('vqa-mlp-%d.params' % (e))
 
@@ -156,11 +156,11 @@ if __name__ == '__main__':
     print("Total val image:", val_img.shape, "Total val question:", val_q.shape,"Total val ans:", val_ans.shape)
     print("Total test image:", test_img.shape, "Total test question:", test_q.shape)
 
-    data_train = DataIter(train_img, train_q, train_ans, False)
-    data_val = DataIter(val_img, val_q, val_ans, False)
+    data_train = DataIter(train_img, train_q, train_ans)
+    data_val = DataIter(val_img, val_q, val_ans)
     train(net, data_train, data_val, start_epoch=start_epoch, ctx=ctx)
 
-    data_test = DataIter(test_img, test_q, train_ans, True)
+    data_test = DataIter(test_img, test_q, np.zeros(test_img.shape[0]*15))
     ans_idx = predict(net, data_test, ctx)
 
     output_data(ans_dict, ans_idx)

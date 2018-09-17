@@ -4,11 +4,10 @@ import mxnet.ndarray as nd
 
 
 class DataIter(mx.io.DataIter):
-    def __init__(self, image, question, answer, is_test):
+    def __init__(self, image, question, answer):
 
         assert len(image)*5 == len(question)
-        if not is_test:
-            assert len(image)*15 == len(answer)
+        assert len(image)*15 == len(answer)
 
         self.idx = []
         self.cur_idx = 0
