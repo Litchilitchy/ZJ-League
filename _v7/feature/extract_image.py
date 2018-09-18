@@ -1,8 +1,9 @@
 from mxnet import nd, image
 import numpy as np
 import os
+import _thread
 
-
+import gluonbook as gb
 from mxnet.gluon.model_zoo import vision
 from mxnet.gluon import nn
 import logging
@@ -22,8 +23,15 @@ def load_image(img_path, long_side_length):
     return x
 
 
+data_path = {'train': './../data/train_img/',
+             'val': './../data/train_img/',
+             'test': './../data/test_img/'}
+ctx = gb.try_gpu()
+
+
 def get_image_feature(img_path):
-    img_net = vision.inception_v3(pretrained=True)
+
+    img_net = vision.inception_v3(pretrained=True, ctx=ctx)
     img = load_image(img_path, 448)
 
     feature = img_net.features(img)
@@ -59,11 +67,6 @@ def get_processed_state(mode=None):
     print(mode, 'feature idx start from', idx)
 
     return idx, best_filename
-
-
-data_path = {'train': './../data/train_img/',
-             'val': './../data/train_img/',
-             'test': './../data/test_img/'}
 
 
 def output_image_feature(mode=None, val_cut_idx=0, frame_per_video=0):
@@ -122,6 +125,10 @@ def output_image_feature(mode=None, val_cut_idx=0, frame_per_video=0):
     # feature shape (2048, )
 
 
-output_image_feature(mode='train', val_cut_idx=3000, frame_per_video=5)
-output_image_feature(mode='val', val_cut_idx=3000, frame_per_video=5)
-output_image_feature(mode='test', frame_per_video=5)
+try:
+    _thread.start_new_thread(output_image_feature(mode='train', val_cut_idx=3000, frame_per_video=5))
+    #output_image_feature(mode='train', val_cut_idx=3000, frame_per_video=5)
+    _thread.start_new_thread(output_image_feature(mode='val', val_cut_idx=3000, frame_per_video=5))
+    _thread.start_new_thread(output_image_feature(mode='test', frame_per_video=5))
+except:
+    print('failed to run new thread')
