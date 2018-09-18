@@ -16,16 +16,17 @@ class Net1(gluon.Block):
             self.fc2 = nn.Dense(num_category)
             self.image_lstm = gluon.rnn.LSTM(hidden_size=8)
             self.question_lstm = gluon.rnn.LSTM(hidden_size=16)
-            self.lstm_fc = nn.Dense(2048, activation="relu")
+            self.image_fc = nn.Dense(2048, activation="relu")
+            self.question_fc = nn.Dense(2048, activation="relu")
 
     def forward(self, x):
         x1 = x[0]
         x1 = self.image_lstm(x1)
-        x1 = self.lstm_fc(x1)
+        x1 = self.image_fc(x1)
         x1 = nd.L2Normalization(x1)
         x2 = x[1]
         x2 = self.question_lstm(x2)
-        x2 = self.lstm_fc(x2)
+        x2 = self.question_fc(x2)
         x2 = nd.L2Normalization(x2)
 
         z = nd.elemwise_mul(x1, x2)
