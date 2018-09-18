@@ -6,6 +6,7 @@ import os
 from time import time
 from data_iter import DataIter
 
+import gluonbook as gb
 import mxnet.gluon as gluon
 from mxnet.gluon import nn
 from mxnet import autograd
@@ -136,7 +137,7 @@ def predict(net, data_test, ctx=mx.cpu()):
 
 
 if __name__ == '__main__':
-    ctx = mx.cpu()
+    ctx = gb.try_gpu()
 
     ans_dict = json.load(open('feature/ans_dict.json'))
     num_category = len(ans_dict)
