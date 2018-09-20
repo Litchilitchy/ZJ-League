@@ -32,12 +32,12 @@ ctx = gb.try_gpu()
 
 def get_image_feature(img_path):
 
-    img_net = vision.inception_v3(pretrained=True)
+    img_net = vision.inception_v3(pretrained=True, ctx=ctx)
     img = load_image(img_path, 448)
 
-    feature = img_net.features(img)
+    feature = img_net.features(img.as_in_context(ctx)).asnumpy()
     #logging.debug("feature shape is %s", feature.shape)
-
+    feature = feature.reshape(-1)
     #img_net.forward(img)
     #feature = img_net.output()[0].asnumpy()
 
@@ -104,7 +104,7 @@ def output_image_feature(mode=None, val_cut_idx=0, frame_per_video=0):
         if len(f) == 1 or f[1] != 'jpg':
             continue
 
-        feature = get_image_feature(data_path[mode] + filename).asnumpy()
+        feature = get_image_feature(data_path[mode] + filename)
 
         video_feature.append(feature)
         if (cur_img_idx+1) % frame_per_video == 0:
@@ -129,7 +129,8 @@ def output_image_feature(mode=None, val_cut_idx=0, frame_per_video=0):
 
 
 
-_thread.start_new_thread(output_image_feature(mode='train', val_cut_idx=3000, frame_per_video=5))
+output_image_feature(mode='train', val_cut_idx=3000, frame_per_video=5)
 #output_image_feature(mode='train', val_cut_idx=3000, frame_per_video=5)
-_thread.start_new_thread(output_image_feature(mode='val', val_cut_idx=3000, frame_per_video=5))
-_thread.start_new_thread(output_image_feature(mode='test', frame_per_video=5))
+output_image_feature(mode='val', val_cut_idx=3000, frame_per_video=5)
+output_image_feature(mode='test', frame_per_video=5)
+

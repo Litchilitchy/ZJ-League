@@ -111,6 +111,7 @@ def get_qa_pair_from_line(line, word_emd_dict={}, ans_dict={}):
                 if cur_word not in word_emd_dict:
                     if len(cur_word.split("'")) > 1:
                         if cur_word.split("'")[0] not in word_emd_dict:
+                            j += 1
                             continue
                         q_vec.append(word_emd_dict[cur_word.split("'")[0]])
                         cur_len += 1
