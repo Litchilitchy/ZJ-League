@@ -26,17 +26,20 @@ def load_image(img_path, long_side_length):
 data_path = {'train': './../data/train_img/',
              'val': './../data/train_img/',
              'test': './../data/test_img/'}
+
 ctx = gb.try_gpu()
 
 
 def get_image_feature(img_path):
 
-    img_net = vision.inception_v3(pretrained=True, ctx=ctx)
+    img_net = vision.inception_v3(pretrained=True)
     img = load_image(img_path, 448)
 
     feature = img_net.features(img)
-    logging.debug("feature shape is %s", feature.shape)
-    feature = feature.reshape(-1)
+    #logging.debug("feature shape is %s", feature.shape)
+
+    #img_net.forward(img)
+    #feature = img_net.output()[0].asnumpy()
 
     return feature
 
@@ -111,12 +114,12 @@ def output_image_feature(mode=None, val_cut_idx=0, frame_per_video=0):
         if (cur_img_idx+1) % 100 == 0:
             print('100 of %s image is processed' % mode)
         if (cur_img_idx+1) % 1000 == 0:
-            tmp_nd = np.vstack(image_feature)
+            tmp_nd = np.array(image_feature)
             print(tmp_nd.shape)
             np.save('tmp/' + mode + '-' + str(cur_img_idx+1) + '.npy', tmp_nd)
 
     assert len(image_feature) != 0
-    image_feature_nd = np.vstack(image_feature)
+    image_feature_nd = np.array(image_feature)
     print('check final shape', image_feature_nd.shape)
 
     np.save(mode + '_image.npy', image_feature_nd)
@@ -125,10 +128,8 @@ def output_image_feature(mode=None, val_cut_idx=0, frame_per_video=0):
     # feature shape (2048, )
 
 
-try:
-    _thread.start_new_thread(output_image_feature(mode='train', val_cut_idx=3000, frame_per_video=5))
-    #output_image_feature(mode='train', val_cut_idx=3000, frame_per_video=5)
-    _thread.start_new_thread(output_image_feature(mode='val', val_cut_idx=3000, frame_per_video=5))
-    _thread.start_new_thread(output_image_feature(mode='test', frame_per_video=5))
-except:
-    print('failed to run new thread')
+
+_thread.start_new_thread(output_image_feature(mode='train', val_cut_idx=3000, frame_per_video=5))
+#output_image_feature(mode='train', val_cut_idx=3000, frame_per_video=5)
+_thread.start_new_thread(output_image_feature(mode='val', val_cut_idx=3000, frame_per_video=5))
+_thread.start_new_thread(output_image_feature(mode='test', frame_per_video=5))
