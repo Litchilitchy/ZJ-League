@@ -34,7 +34,7 @@ data_path = {'train': './../data/train_img/',
 
 ctx = gb.try_gpu()
 img_net = vision.inception_v3(pretrained=True, ctx=ctx)
-detect_net = model_zoo.get_model('ssd_512_resnet50_v1_voc', pretrained=True)
+detect_net = model_zoo.get_model('ssd_512_resnet50_v1_voc', pretrained=True, ctx=ctx)
 
 
 def get_image_feature(img_path):
