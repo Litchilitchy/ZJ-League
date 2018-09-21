@@ -115,7 +115,7 @@ if __name__ == '__main__':
     test_q = np.load('feature/test_question.npy')
     print("Total test question:", test_q.shape[0])
 
-    data_test = DataIter(test_img, test_q, np.zeros(test_img.shape[0]*15), True)
+    data_test = DataIter(test_img, test_q, np.zeros(test_img.shape[0]*15))
 
     ans_idx = predict(net, data_test, ctx)
     print('predict result shape is: ', len(ans_idx))
