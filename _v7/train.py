@@ -41,7 +41,7 @@ def train(net, data_train, data_val, start_epoch=0, ctx=mx.cpu()):
 
     epochs = 20
     moving_loss = 0.
-    best_eva = evaluate_accuracy(data_val, net)
+    best_eva = evaluate_accuracy(data_val, net, ctx=ctx)
     print('current best val acc is ', best_eva)
     for e in range(start_epoch, epochs):
         data_train.reset()
@@ -69,71 +69,13 @@ def train(net, data_train, data_val, start_epoch=0, ctx=mx.cpu()):
             # if i % 200 == 0:
             #    print("Epoch %s, batch %s. Moving avg of loss: %s" % (e, i, moving_loss))
 
-        train_accuracy = evaluate_accuracy(data_train, net)
-        val_accuracy = evaluate_accuracy(data_val, net)
+        train_accuracy = evaluate_accuracy(data_train, net, ctx=ctx)
+        val_accuracy = evaluate_accuracy(data_val, net, ctx=ctx)
         print("Epoch %s. Loss: %s, Train_acc %s, Eval_acc %s" % (e, moving_loss, train_accuracy, val_accuracy))
         if val_accuracy > best_eva:
             best_eva = val_accuracy
             logging.info('Best validation acc found. Checkpointing...')
             net.save_params('vqa-mlp-%d.params' % (e))
-
-
-def output_data(idx_to_ans={}, vid_to_ans={}):
-    with open('data/test.txt', 'r') as f:
-
-        with open('data/submit.txt', 'w') as out:
-            for line in f:
-                line = line.strip('\n').split(',')
-                assert len(line) == 21
-                vid = line[0]
-                q = []
-                for i in range(1, 21, 4):
-                    q.append(line[i])
-
-                ans = ''
-                ans += vid
-                ans += ','
-                for i in range(5):
-                    ans += q[i]
-                    ans += ','
-
-                    tp = np.argmax(vid_to_ans[vid][i*3].asnumpy())
-
-                    if str(tp) not in idx_to_ans:
-                        tp = '0'
-                    ans += idx_to_ans[str(tp)]
-                    if i != 4:
-                        ans += ','
-                ans += '\n'
-                out.write(ans)
-    return
-
-
-def predict(net, data_test, ctx=mx.cpu()):
-    # vid_list store the order of data_test, string type
-    # vid_list = [vid1, vid2, vid3, ...]
-    vid_dict = json.load(open('feature/video_idx_dict.json'))
-    vid_list = []
-    for k in vid_dict:
-        vid_list.append(vid_dict[k])
-
-    ans = {}
-
-    for i, batch in enumerate(data_test):
-        with autograd.record():
-            image = batch.data[0].as_in_context(ctx)
-            question = batch.data[1].as_in_context(ctx)
-            data = [image, question]
-            # label = batch.label[0].as_in_context(ctx)
-            # label_one_hot = nd.one_hot(label, 10)
-            output = net(data)
-            '''
-            if vid_list[i] not in ans:
-                ans[vid_list[i]] = []
-            ans[vid_list[i]].append(output)'''
-            ans[vid_list[i]] = output
-
-    return ans
 
 
 if __name__ == '__main__':
@@ -161,8 +103,4 @@ if __name__ == '__main__':
     data_val = DataIter(val_img, val_q, val_ans)
     train(net, data_train, data_val, start_epoch=start_epoch, ctx=ctx)
 
-    data_test = DataIter(test_img, test_q, np.zeros(test_img.shape[0]*15))
-    ans_idx = predict(net, data_test, ctx)
-
-    output_data(ans_dict, ans_idx)
 
