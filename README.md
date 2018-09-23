@@ -1,5 +1,11 @@
 # ZJ-League
 Alibaba ZJ League Video Question Answering
+ 
+Competition Link: https://tianchi.aliyun.com/competition/introduction.htm?spm=5176.11165320.5678.1.1122325cOBX6Rr&raceId=231676&_lang=en_US
+
+初赛代码已按提交要求整理在 `project-pre` 中，主目录整理好后会删除旧版本备份
+
+Code of pre-competition is packaged in `project-pre` dir as the requirements of the competition
 
 #### 目录结构 File Contents
     ---
