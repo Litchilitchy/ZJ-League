@@ -60,7 +60,7 @@ Once get the `.npy` after running the `.py` program in `feature` dir, run `pytho
 
 ### Flow-diagram
 
-https://github.com/SummerLitchy/ZJ-League/raw/master/_instruction/ZJL_flow_diagram.png
+![img wrong](https://github.com/SummerLitchy/ZJ-League/raw/master/_instruction/ZJL_flow_diagram.png)
 
 
 ### log
