@@ -25,7 +25,8 @@ Code of pre-competition is packaged in `project-pre` dir as the requirements of 
         model.py  
         train.py   
         data_iter.py
-        main.py            
+        main.py  
+      submit
 
 #### 使用方法和说明 Run Instructions
 
@@ -43,32 +44,8 @@ Additionally, there are several more operations during official run
 
 Make a new directory to store the glove model, in dir `feature/glove_model`, and copy the file `glove.6B.zip` into it. It is suggested to directly download it from website http://nlp.stanford.edu/data, since the download in python is easy to get interrupted and the breakpoint resume is not supported
     
-    ---   
-    data        
-      train_img
-        ---vid1_1.jpg
-        ---vid1_2.jpg
-        ...
-        ---vidn_3.jpg
-      test_img
-        ---vid1_1.jpg
-        ---vid1_2.jpg
-        ...
-        ---vidn_3.jpg    
-      ---train.txt
-      ---test.txt
-      ---submit.txt
-      get_video_frame.py    # this .py is not necessary for program running
-    feature
-      glove_model
-        ---glove.6B.zip
-      ---extract_image.py 
-      ---extract_question.py  
-    model.py
-    train.py
-    data_iter.py      
 
-#### 训练方法 Training Steps
+#### 分步训练方法 Separated Training Steps
 `feature`文件夹中的`extract_image`和`extract_question`可以单独运行，先分别运行一次，生成`train.py`中需要的`.npy`文件，作为提取特征的预训练
 
 The program `extract_image.py` and `extract_question.py` can run seperately, first run each of them to get the feature `.npy` file, which will be needed in training steps
