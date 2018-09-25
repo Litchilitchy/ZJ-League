@@ -58,6 +58,11 @@ The program `extract_image.py` and `extract_question.py` can run seperately, fir
 
 Once get the `.npy` after running the `.py` program in `feature` dir, run `python train.py` to get the answer
 
+### Flow-diagram
+
+https://github.com/SummerLitchy/ZJ-League/raw/master/_instruction/ZJL_flow_diagram.png
+
+
 ### log
 v1: can not be used
 
