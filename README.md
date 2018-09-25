@@ -3,42 +3,45 @@ Alibaba ZJ League Video Question Answering
  
 Competition Link: https://tianchi.aliyun.com/competition/introduction.htm?spm=5176.11165320.5678.1.1122325cOBX6Rr&raceId=231676&_lang=en_US
 
-初赛代码已按提交要求整理在 `project-pre` 中，主目录整理好后会删除旧版本备份
+初赛代码已按提交要求整理在 `project-pre` 中
 
 Code of pre-competition is packaged in `project-pre` dir as the requirements of the competition
 
 #### 目录结构 File Contents
     ---
-      _instruction   # 用来放说明文件
-      _test_function   # 用来测试单个模块 
-      feature
-        ---extract_image.py 
-        ---extract_question.py  
-      model.py  
-      train.py   
-      data_iter.py
-      
-      _v1
-      _v2
-      ...
-      
-以上为github中目录，使用时需先copy以上目录到项目路径，另外，实际使用目录变更如下：
+      _instruction   # 用来放说明文件 
+      data
+        train
+        test
+        --train.txt
+        --test.txt        
+      code
+        feature
+          glove_model
+          --extract_image.py 
+          --extract_question.py 
+        get_video_frame.py
+        evaluate.py
+        model.py  
+        train.py   
+        data_iter.py
+        main.py            
 
-Above is the contents on github, before official run, first copy the contents above to your project dir. Additionally, there are several more operations during official run
+#### 使用方法和说明 Run Instructions
 
-需要用到视频关键帧截取`get_video_frame.py`（此模块在`data`文件夹下），输出图片（每个视频自定义张数）作为训练数据，和原训练文本数据一起放在根目录下的文件夹中，并命名为`train_img, test_img`
+所有代码在`code`文件夹中 All the code are in `code` directory
 
-First of all, use `get_video_frame.py` (locate in `data` dir) to extract some images from the source training video, and output the images to `train_img, test_img` at the project dir
+一步运行：将训练用的视频文件夹`train,test`和文本`train.txt,test.txt`放在`data`文件夹下，运行`code/main.py`即可得到结果在`submit`文件夹中
+
+Run in one line code: put the training video dir `train, test` and training text file `train.txt,test.txt` in `data` dir, and run `code/main.py`, then the result will be generated in `submit` dir
+
+另外，实际使用时需要加入以下操作：
+
+Additionally, there are several more operations during official run
 
 需要新增一个glove路径用于存放词向量模型，具体方法为，在`feature`文件夹下，创建文件夹`glove_model`，放入`glove.6B.zip`（建议在 http://nlp.stanford.edu/data 中下载并复制，使用python中的下载函数容易出错，并且不支持断点）
 
 Make a new directory to store the glove model, in dir `feature/glove_model`, and copy the file `glove.6B.zip` into it. It is suggested to directly download it from website http://nlp.stanford.edu/data, since the download in python is easy to get interrupted and the breakpoint resume is not supported
-
-最初的模型从 v1 -> vn 版本存放在 \_v1 -> \_vn 文件夹中，根目录下为最终模型，v1 -> vn 每个文件夹下都包含所有该模型代码（`feature`中的两个`.py`和根目录下的三个`.py`）
-
-实际使用目录如下，github上的data目录中包含了截取的非常少量的数据，仅用于debug跑通程序
-
-The overall contents is as following, and `data` dir on github only contains very few training data, only used to make a run for your program
     
     ---   
     data        
@@ -63,8 +66,7 @@ The overall contents is as following, and `data` dir on github only contains ver
       ---extract_question.py  
     model.py
     train.py
-    data_iter.py
-      
+    data_iter.py      
 
 #### 训练方法 Training Steps
 `feature`文件夹中的`extract_image`和`extract_question`可以单独运行，先分别运行一次，生成`train.py`中需要的`.npy`文件，作为提取特征的预训练
@@ -78,14 +80,6 @@ The program `extract_image.py` and `extract_question.py` can run seperately, fir
 运行结束`feature`文件夹中的代码后，运行`train.py`生成answer数据输出
 
 Once get the `.npy` after running the `.py` program in `feature` dir, run `python train.py` to get the answer
-      
-### 方法    
-   
-#### image-question模型
-
-![image](https://github.com/SummerLitchy/Zcup/blob/master/_instruction/VQA-attention.png)
-
-来源于 https://github.com/shiyangdaisy23/vqa-mxnet-gluon/blob/master/Attention-VQA-gluon.ipynb
 
 ### log
 v1: can not be used
