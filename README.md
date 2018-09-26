@@ -62,20 +62,3 @@ Once get the `.npy` after running the `.py` program in `feature` dir, run `pytho
 
 ![img wrong](https://github.com/SummerLitchy/ZJ-League/raw/master/_instruction/ZJL_flow_diagram.png)
 
-
-### log
-v1: can not be used
-
-v2: word emd only, 1 image per video, concat
-
-v3: to be added
-
-v4: lstm added
-
-v5: evaluate added
-
-v6: change concat to element_mul, cross validation added
-
-v7: 5 image per video, lstm
-
-
