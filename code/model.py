@@ -16,8 +16,10 @@ class Net1(gluon.Block):
             self.dropout = nn.Dropout(0.3)
             self.fc1 = nn.Dense(4096, activation="relu")
             self.fc2 = nn.Dense(num_category)
-            self.image_lstm = gluon.rnn.LSTM(hidden_size=5)
-            self.question_lstm = gluon.rnn.LSTM(hidden_size=12)
+            self.image_lstm = gluon.rnn.LSTM(hidden_size=1024, num_layers=5)
+
+            #self.lstm_cell = gluon.rnn.LSTMCell
+            self.question_lstm = gluon.rnn.LSTM(hidden_size=100, num_layers=12)
             self.image_fc = nn.Dense(1024, activation="relu")
             self.question_fc = nn.Dense(1024, activation="relu")
             self.ctx = gb.try_gpu()
