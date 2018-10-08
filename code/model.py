@@ -5,7 +5,7 @@ import numpy as np
 import mxnet.ndarray.contrib as C
 import gluonbook as gb
 
-# the original easiest model v1 - simply concat
+
 class Net1(gluon.Block):
     def __init__(self, num_category, **kwargs):
         super(Net1, self).__init__(**kwargs)
@@ -18,7 +18,12 @@ class Net1(gluon.Block):
             self.fc2 = nn.Dense(num_category)
             self.image_lstm = gluon.rnn.LSTM(hidden_size=1024, num_layers=5)
 
-            #self.lstm_cell = gluon.rnn.LSTMCell
+            '''
+            self.lstm_cell = [gluon.rnn.LSTMCell(hidden_size=100) for i in range(5)]
+            self.h = [nd.random.uniform(shape=(15, 100)) for i in range(5)]
+            self.c = [nd.random.uniform(shape=(15, 100)) for i in range(5)]
+            '''
+
             self.question_lstm = gluon.rnn.LSTM(hidden_size=100, num_layers=12)
             self.image_fc = nn.Dense(1024, activation="relu")
             self.question_fc = nn.Dense(1024, activation="relu")
@@ -60,7 +65,6 @@ class Net1(gluon.Block):
         z = self.fc2(z)
         return z
         '''
-
 
         x1 = x[0]
         x1 = self.image_lstm(x1)
