@@ -75,7 +75,7 @@ class Net1(gluon.Block):
         x2 = self.question_fc(x2)
         x2 = nd.L2Normalization(x2)
 
-        z = nd.elewise_mul(x1, x2)
+        z = nd.elewmise_mul(x1, x2)
         z = self.fc1(z)
         z = self.bn(z)
         z = self.dropout(z)
